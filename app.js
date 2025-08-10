@@ -1,4 +1,4 @@
-// app.js
+// app.js (completo e corrigido)
 import * as dom from './dom.js';
 import * as storage from './storage.js';
 import * as finance from './finance.js';
@@ -12,8 +12,7 @@ let limiteGasto = 0;
 let orcamentosPorCategoria = {};
 
 function init() {
-    // Inicia os módulos da aplicação
-    dom.init();
+    // Inicializa os módulos da aplicação
     finance.init();
     charts.init();
 
@@ -33,6 +32,16 @@ function init() {
     dom.btnSalvarLimiteCategoria.addEventListener('click', handleSaveBudget);
     dom.cancelarExclusaoBtn.addEventListener('click', fecharModalConfirmacao);
     dom.confirmarExclusaoBtn.addEventListener('click', confirmDeleteTransaction);
+
+    // Lógica do menu hambúrguer (corrigido)
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
 
     // Event Listeners para eventos internos
     on(EVENT_NAMES.DATA_UPDATED, updateUI);

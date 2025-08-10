@@ -1,3 +1,4 @@
+// dom.js
 import { emit } from './eventEmitter.js';
 import { ICONS, EVENT_NAMES } from './config.js';
 
@@ -128,20 +129,4 @@ export function prepararParaRemocao(e, onConfirm) {
     cancelarExclusaoBtn.onclick = () => {
         modalConfirmacao.style.display = 'none';
     };
-}
-
-// NOVO: Adiciona a lógica para o menu hamburguer
-export function init() {
-    // Referências DOM para o menu hamburguer
-    const hamburgerBtn = document.getElementById('hamburger');
-    const navLinks = document.getElementById('nav-links');
-
-    // Lógica para alternar o menu hamburguer
-    if (hamburgerBtn && navLinks) {
-        hamburgerBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    }
-
-    // ... outros inicializadores (se houver)
 }
