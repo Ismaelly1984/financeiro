@@ -1,3 +1,4 @@
+// app.js
 import * as dom from './dom.js';
 import * as storage from './storage.js';
 import * as finance from './finance.js';
@@ -11,9 +12,12 @@ let limiteGasto = 0;
 let orcamentosPorCategoria = {};
 
 function init() {
+    // Inicia os módulos da aplicação
+    dom.init();
     finance.init();
     charts.init();
 
+    // Carrega dados do localStorage
     limiteGasto = storage.carregarLimiteGasto();
     orcamentosPorCategoria = storage.carregarOrcamentosPorCategoria();
 
@@ -240,10 +244,18 @@ function updateUI() {
 
 
 window.addEventListener('load', () => {
+    // Aplica o tema salvo no carregamento da página
     const temaSalvo = localStorage.getItem('tema');
     if (temaSalvo === 'light') {
-        dom.toggleTemaBtn.click();
+        document.documentElement.classList.add('light');
+        const icon = dom.toggleTemaBtn.querySelector('i');
+        if (icon) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
     }
+    
+    // Inicia a aplicação
     init();
 
     if ('serviceWorker' in navigator) {

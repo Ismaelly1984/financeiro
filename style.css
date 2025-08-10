@@ -621,10 +621,6 @@ body.light .transacao-info span {
   .nav-links.active {
     display: flex;
   }
-  .nav-links li {
-    text-align: center;
-    padding: 0.5rem 0;
-  }
   .hamburger {
     display: block;
   }
@@ -687,12 +683,12 @@ body.light .transacao-info span {
 }
 
 /* Tema escuro: ícone branco */
-body:not(.light) #toggle-tema i {
+:root:not(.light) #toggle-tema i {
   color: #ffffff;
 }
 
 /* Tema claro: ícone preto */
-body.light #toggle-tema i {
+:root.light #toggle-tema i {
   color: #000000;
 }
 

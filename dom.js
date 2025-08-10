@@ -1,7 +1,7 @@
 import { emit } from './eventEmitter.js';
 import { ICONS, EVENT_NAMES } from './config.js';
 
-// Referências DOM (sem alteração)
+// Referências DOM
 export const form = document.getElementById('form');
 export const lista = document.getElementById('lista-transacoes');
 export const saldoSpan = document.getElementById('saldo');
@@ -32,7 +32,7 @@ export const inputLimiteCategoria = document.getElementById('input-limite-catego
 export const btnSalvarLimiteCategoria = document.getElementById('btn-salvar-limite-categoria');
 export const listaOrcamentosCategorias = document.getElementById('lista-orcamentos-categorias');
 
-// Funções de UI (alteradas para usar eventos e config)
+// Funções de UI
 export function exibirMensagem(texto, tipo = 'info', duracao = 3000) {
     const mensagemDiv = document.getElementById('mensagem-app');
     if (!mensagemDiv) return;
@@ -128,4 +128,20 @@ export function prepararParaRemocao(e, onConfirm) {
     cancelarExclusaoBtn.onclick = () => {
         modalConfirmacao.style.display = 'none';
     };
+}
+
+// NOVO: Adiciona a lógica para o menu hamburguer
+export function init() {
+    // Referências DOM para o menu hamburguer
+    const hamburgerBtn = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+
+    // Lógica para alternar o menu hamburguer
+    if (hamburgerBtn && navLinks) {
+        hamburgerBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // ... outros inicializadores (se houver)
 }
