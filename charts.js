@@ -1,6 +1,6 @@
 import { on } from './eventEmitter.js';
 import { EVENT_NAMES, COLORS, ICONS } from './config.js';
-import { calcularSaldo, transacoes } from './finance.js';
+import { calcularSaldo, getTransacoes } from './finance.js'; // Importação alterada
 
 export let graficoPizza = null;
 export let graficoLinha = null;
@@ -15,7 +15,9 @@ function atualizarGraficos() {
 }
 
 function atualizarGraficoPizza() {
-    const despesas = Object.values(transacoes).filter(t => t.tipo === 'despesa');
+    // Agora usando a função getTransacoes() para obter os dados mais recentes
+    const transacoesAtuais = getTransacoes();
+    const despesas = Object.values(transacoesAtuais).filter(t => t.tipo === 'despesa');
     const gastosPorCategoria = despesas.reduce((acc, t) => {
         acc[t.categoria] = (acc[t.categoria] || 0) + parseFloat(t.valor);
         return acc;
@@ -76,7 +78,9 @@ function atualizarGraficoPizza() {
 }
 
 function atualizarGraficoLinha() {
-    const despesas = Object.values(transacoes).filter(t => t.tipo === 'despesa');
+    // Agora usando a função getTransacoes() para obter os dados mais recentes
+    const transacoesAtuais = getTransacoes();
+    const despesas = Object.values(transacoesAtuais).filter(t => t.tipo === 'despesa');
     const gastosPorMes = despesas.reduce((acc, t) => {
         const mes = t.data.substring(0, 7);
         acc[mes] = (acc[mes] || 0) + parseFloat(t.valor);

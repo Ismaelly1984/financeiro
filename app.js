@@ -9,7 +9,7 @@ import { EVENT_NAMES } from './config.js';
 let ordemAscendente = false;
 let idParaExcluir = null;
 let limiteGasto = 0;
-let orcamentosPorCategoria = {};
+let orcamentosPorCategoria = {}; 
 
 function init() {
     // Inicializa os módulos da aplicação
@@ -27,7 +27,7 @@ function init() {
     dom.toggleTemaBtn.addEventListener('click', toggleTema);
     dom.filtroTipoSelect.addEventListener('change', updateUI);
     dom.filtroCategoriaSelect.addEventListener('change', updateUI);
-    dom.ordenarPorSelect.addEventListener('change', updateUI);
+    dom.ordenarPorSelect.addEventListener('change', toggleOrdenacao); // Corrigido aqui
     dom.toggleOrdenacaoBtn.addEventListener('click', toggleOrdenacao);
     dom.btnSalvarLimiteCategoria.addEventListener('click', handleSaveBudget);
     dom.cancelarExclusaoBtn.addEventListener('click', fecharModalConfirmacao);
@@ -44,6 +44,7 @@ function init() {
     }
 
     // Event Listeners para eventos internos
+    // A função updateUI é chamada com os dados atualizados
     on(EVENT_NAMES.DATA_UPDATED, updateUI);
     on(EVENT_NAMES.EDIT_REQUESTED, handleEditRequest);
     on(EVENT_NAMES.DELETE_REQUESTED, handleDeleteRequest);
@@ -58,6 +59,9 @@ function init() {
             fecharModalConfirmacao();
         }
     });
+
+    // Emite o evento aqui, após todos os listeners estarem prontos
+    emit(EVENT_NAMES.DATA_UPDATED);
 }
 
 function handleAddTransaction(e) {
@@ -183,7 +187,7 @@ function handleSaveBudget() {
 
 function updateBudgetsUI() {
     dom.listaOrcamentosCategorias.innerHTML = '';
-    const despesas = Object.values(finance.transacoes).filter(t => t.tipo === 'despesa');
+    const despesas = Object.values(finance.getTransacoes()).filter(t => t.tipo === 'despesa');
     const gastosPorCategoria = despesas.reduce((acc, t) => {
         acc[t.categoria] = (acc[t.categoria] || 0) + parseFloat(t.valor);
         return acc;
@@ -241,7 +245,9 @@ function toggleTema() {
 }
 
 function updateUI() {
-    dom.renderizarTransacoes(finance.transacoes, dom.filtroTipoSelect.value, dom.filtroCategoriaSelect.value, dom.ordenarPorSelect.value, ordemAscendente);
+    // Acessa os dados de transação através da função do módulo finance
+    const transacoesAtuais = finance.getTransacoes();
+    dom.renderizarTransacoes(transacoesAtuais, dom.filtroTipoSelect.value, dom.filtroCategoriaSelect.value, dom.ordenarPorSelect.value, ordemAscendente);
     const { receitas, despesas, saldo } = finance.calcularSaldo();
     dom.totalReceitasSpan.textContent = receitas.toFixed(2);
     dom.totalDespesasSpan.textContent = despesas.toFixed(2);
@@ -268,7 +274,15 @@ window.addEventListener('load', () => {
     init();
 
     if ('serviceWorker' in navigator) {
-       navigator.serviceWorker.register('/financeiro/service-worker.js')
+        // Usa o caminho correto para o ambiente local
+        let serviceWorkerPath = '/service-worker.js';
+
+        // Verifica se o site está sendo servido de uma subpasta (como no GitHub Pages)
+        if (window.location.pathname.includes('/financeiro/')) {
+            serviceWorkerPath = '/financeiro/service-worker.js';
+        }
+
+        navigator.serviceWorker.register(serviceWorkerPath)
             .then(registration => {
                 console.log('Service Worker registrado com sucesso:', registration);
             })

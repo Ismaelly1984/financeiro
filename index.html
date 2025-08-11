@@ -5,7 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Gastos</title>
-  <meta name="description" content="Um aplicativo simples de controle financeiro pessoal para gerenciar receitas e despesas.">
+  <meta name="description"
+    content="Um aplicativo simples de controle financeiro pessoal para gerenciar receitas e despesas.">
 
   <!-- Font Awesome para ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -32,9 +33,9 @@
         <li><a href="#limite">Limite</a></li>
         <li><a href="#orcamento-categorias">Orçamento</a></li> <!-- Novo link de navegação -->
         <li>
-            <button id="toggle-tema" aria-label="Alternar tema claro/escuro">
-                <i class="fas fa-moon"></i>
-            </button>
+          <button id="toggle-tema" aria-label="Alternar tema claro/escuro">
+            <i class="fas fa-moon"></i>
+          </button>
         </li>
       </ul>
     </div>
@@ -84,23 +85,23 @@
 
     <!-- Seção de orçamento por categoria -->
     <section id="orcamento-categorias" class="orcamento-categorias">
-        <h2><i class="fas fa-chart-pie"></i> Orçamento por Categoria</h2>
-        <div class="orcamento-controles">
-            <select id="select-categoria-orcamento" aria-label="Selecionar categoria para orçamento">
-                <option value="">Selecionar Categoria</option>
-                <option value="alimentacao">🍽️ Alimentação</option>
-                <option value="transporte">🚌 Transporte</option>
-                <option value="lazer">🎮 Lazer</option>
-                <option value="saude">🏥 Saúde</option>
-                <option value="educacao">📚 Educação</option>
-                <option value="outros">🧩 Outros</option>
-            </select>
-            <input type="number" id="input-limite-categoria" placeholder="Definir Limite (R$)" step="0.01" />
-            <button id="btn-salvar-limite-categoria"><i class="fas fa-save"></i> Salvar Limite</button>
-        </div>
-        <div id="lista-orcamentos-categorias" class="lista-orcamentos-categorias">
-            <!-- Orçamentos de categoria serão renderizados aqui -->
-        </div>
+      <h2><i class="fas fa-chart-pie"></i> Orçamento por Categoria</h2>
+      <div class="orcamento-controles">
+        <select id="select-categoria-orcamento" aria-label="Selecionar categoria para orçamento">
+          <option value="">Selecionar Categoria</option>
+          <option value="alimentacao">🍽️ Alimentação</option>
+          <option value="transporte">🚌 Transporte</option>
+          <option value="lazer">🎮 Lazer</option>
+          <option value="saude">🏥 Saúde</option>
+          <option value="educacao">📚 Educação</option>
+          <option value="outros">🧩 Outros</option>
+        </select>
+        <input type="number" id="input-limite-categoria" placeholder="Definir Limite (R$)" step="0.01" />
+        <button id="btn-salvar-limite-categoria"><i class="fas fa-save"></i> Salvar Limite</button>
+      </div>
+      <div id="lista-orcamentos-categorias" class="lista-orcamentos-categorias">
+        <!-- Orçamentos de categoria serão renderizados aqui -->
+      </div>
     </section>
 
     <!-- Seção de resumo de ganhos e gastos -->
@@ -114,7 +115,7 @@
     <!-- Seção da lista de transações -->
     <section id="transacoes" class="transacoes">
       <h2><i class="fas fa-list"></i> Transações</h2>
-      
+
       <div class="filter-sort-controls">
         <div class="filter-controls">
           <select id="filtro-tipo" aria-label="Filtrar por tipo">
@@ -151,28 +152,29 @@
     </section>
 
     <!-- Seção dos gráficos -->
-    <section id="graficos" class="graficos">
-      <div class="grafico">
-        <h2>Gastos por Categoria</h2>
+    <section class="graficos">
+      <div class="grafico-container">
         <canvas id="graficoPizza"></canvas>
       </div>
-      <div class="grafico">
-        <h2>Gastos por Mês</h2>
+      <div class="grafico-container">
         <canvas id="graficoLinha"></canvas>
       </div>
     </section>
   </div>
-  
+
   <!-- Rodapé da página -->
   <footer class="footer">
     <div class="footer-container">
       <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
       <div class="footer-links">
         <a href="#resumo" title="Resumo" aria-label="Ir para a seção de resumo"><i class="fas fa-chart-pie"></i></a>
-        <a href="#transacoes" title="Transações" aria-label="Ir para a seção de transações"><i class="fas fa-list"></i></a>
-        <a href="#graficos" title="Gráficos" aria-label="Ir para a seção de gráficos"><i class="fas fa-chart-line"></i></a>
+        <a href="#transacoes" title="Transações" aria-label="Ir para a seção de transações"><i
+            class="fas fa-list"></i></a>
+        <a href="#graficos" title="Gráficos" aria-label="Ir para a seção de gráficos"><i
+            class="fas fa-chart-line"></i></a>
         <a href="#limite" title="Limite" aria-label="Ir para a seção de limite"><i class="fas fa-bullseye"></i></a>
-        <a href="#orcamento-categorias" title="Orçamento por Categoria" aria-label="Ir para a seção de orçamento por categoria"><i class="fas fa-money-check-alt"></i></a>
+        <a href="#orcamento-categorias" title="Orçamento por Categoria"
+          aria-label="Ir para a seção de orçamento por categoria"><i class="fas fa-money-check-alt"></i></a>
       </div>
     </div>
   </footer>
@@ -180,31 +182,32 @@
   <!-- Modal para edição de transação -->
   <div id="modal-editar" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="fecharModalEdicao()" aria-label="Fechar modal de edição">&times;</span>
-        <h2>Editar Transação</h2>
-        <form id="form-editar">
-            <input type="hidden" id="edit-id" name="edit-id">
-            <input type="text" id="edit-descricao" name="edit-descricao" placeholder="Descrição" required />
-            <input type="number" id="edit-valor" name="edit-valor" placeholder="Valor (R$)" required step="0.01" />
-            <select id="edit-tipo" name="edit-tipo" required>
-                <option value="despesa">Despesa</option>
-                <option value="receita">Receita</option>
-            </select>
-            <select id="edit-categoria" name="edit-categoria" required>
-                <option value="alimentacao">🍽️ Alimentação</option>
-                <option value="transporte">🚌 Transporte</option>
-                <option value="lazer">🎮 Lazer</option>
-                <option value="saude">🏥 Saúde</option>
-                <option value="educacao">📚 Educação</option>
-                <option value="salario">💰 Salário</option>
-                <option value="outros">🧩 Outros</option>
-            </select>
-            <input type="date" id="edit-data" name="edit-data" required />
-            <div class="modal-buttons">
-                <button type="submit" class="modal-salvar-btn"><i class="fas fa-save"></i> Salvar</button>
-                <button type="button" class="modal-cancelar-btn" onclick="fecharModalEdicao()"><i class="fas fa-times"></i> Cancelar</button>
-            </div>
-        </form>
+      <span class="close-btn" onclick="fecharModalEdicao()" aria-label="Fechar modal de edição">&times;</span>
+      <h2>Editar Transação</h2>
+      <form id="form-editar">
+        <input type="hidden" id="edit-id" name="edit-id">
+        <input type="text" id="edit-descricao" name="edit-descricao" placeholder="Descrição" required />
+        <input type="number" id="edit-valor" name="edit-valor" placeholder="Valor (R$)" required step="0.01" />
+        <select id="edit-tipo" name="edit-tipo" required>
+          <option value="despesa">Despesa</option>
+          <option value="receita">Receita</option>
+        </select>
+        <select id="edit-categoria" name="edit-categoria" required>
+          <option value="alimentacao">🍽️ Alimentação</option>
+          <option value="transporte">🚌 Transporte</option>
+          <option value="lazer">🎮 Lazer</option>
+          <option value="saude">🏥 Saúde</option>
+          <option value="educacao">📚 Educação</option>
+          <option value="salario">💰 Salário</option>
+          <option value="outros">🧩 Outros</option>
+        </select>
+        <input type="date" id="edit-data" name="edit-data" required />
+        <div class="modal-buttons">
+          <button type="submit" class="modal-salvar-btn"><i class="fas fa-save"></i> Salvar</button>
+          <button type="button" class="modal-cancelar-btn" onclick="fecharModalEdicao()"><i class="fas fa-times"></i>
+            Cancelar</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -222,4 +225,5 @@
 
   <script type="module" src="app.js"></script>
 </body>
+
 </html>

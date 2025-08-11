@@ -307,7 +307,13 @@ body.light .transacao-info span {
   border-radius: var(--raio-borda);
   box-shadow: var(--sombra-escura);
 }
-
+/* Estilos para os gráficos */
+.grafico-container {
+    position: relative;
+    height: 40vh; /* Define uma altura com base na altura da tela */
+    max-width: 100%;
+    margin: 0 auto 1.5rem auto; /* Centraliza e adiciona margem inferior */
+}
 /* Limite de gastos */
 .limite-gastos input {
   width: 100%;
@@ -719,4 +725,10 @@ body.light .transacao-info span {
 .transacao-item.nova.show {
   opacity: 1;
   transform: translateY(0);
+}
+/* Correção para o height de charts.js */
+.grafico-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
 }

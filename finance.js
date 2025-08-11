@@ -2,16 +2,16 @@ import { emit, on } from './eventEmitter.js';
 import { EVENT_NAMES } from './config.js';
 import { salvarTransacoes, carregarTransacoes } from './storage.js';
 
-export let transacoes = {};
+// Adicione esta linha para definir a variável
+let transacoes = {};
 
 export function init() {
     transacoes = carregarTransacoes();
     on(EVENT_NAMES.TRANSACTION_ADDED, adicionarTransacao);
     on(EVENT_NAMES.TRANSACTION_UPDATED, atualizarTransacao);
     on(EVENT_NAMES.TRANSACTION_DELETED, removerTransacao);
-    emit(EVENT_NAMES.DATA_UPDATED);
+    
 }
-
 function adicionarTransacao(event) {
     const nova = event.detail;
     transacoes[nova.id] = nova;
@@ -46,4 +46,9 @@ export function calcularSaldo() {
     });
     const saldo = receitas - despesas;
     return { receitas, despesas, saldo };
+}
+
+// Mantenha esta função que criamos para outros módulos
+export function getTransacoes() {
+    return transacoes;
 }
