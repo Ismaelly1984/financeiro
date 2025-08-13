@@ -1,8 +1,9 @@
 // service-worker.js
 const CACHE_NAME = 'meu-financeiro-cache-v3';
-const PRECACHE_URLS = [
+const urlsToCache = [
   './',
   './index.html',
+  './help.html',           // se existir
   './style.css',
   './app.js',
   './dom.js',
@@ -13,13 +14,13 @@ const PRECACHE_URLS = [
   './config.js',
   './manifest.json',
   './favicon.png',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  // ATENÇÃO: ajuste este caminho conforme seu projeto
-  './images/screenshot1.png',
+  './icon-192x192.png',    // <- raiz
+  './icon-512x512.png',    // <- raiz
+  './screenshot1.png',     // se estiver na raiz
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
+
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {

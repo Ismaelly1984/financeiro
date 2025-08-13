@@ -18,7 +18,6 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="./favicon.png">
-
 </head>
 
 <body>
@@ -32,8 +31,10 @@
         <li><a href="#resumo">Resumo</a></li>
         <li><a href="#transacoes">Transações</a></li>
         <li><a href="#graficos">Gráficos</a></li>
-        <li><a href="#limite">Limite</a></li>
-        <li><a href="#orcamento-categorias">Orçamento</a></li> <!-- Novo link de navegação -->
+        <li><a href="#limite-app">Limite</a></li>
+        <li><a href="#orcamento-categorias">Orçamento</a></li>
+        <li><a href="#relatorios">Relatórios</a></li>
+        <li><a href="help.html">Ajuda</a></li>
         <li>
           <button id="toggle-tema" aria-label="Alternar tema claro/escuro">
             <i class="fas fa-moon"></i>
@@ -74,11 +75,12 @@
     </form>
 
     <!-- Seção de controle de limite de gastos -->
-    <section id="limite" class="limite-gastos">
+    <section id="limite-app" class="limite-gastos">
       <h2>Controle de Limite</h2>
       <label for="limite">Definir limite de gastos (R$):</label>
       <input type="number" id="limite" name="limite" placeholder="Ex: 1000" />
-      <div class="progress-bar">
+      <div class="progress-bar" role="progressbar" aria-label="Progresso do limite de gastos" aria-valuemin="0"
+        aria-valuemax="100">
         <div id="barra-progresso" class="progress-bar-fill"></div>
       </div>
       <p><strong>Gasto até agora:</strong> R$ <span id="gasto-atual">0.00</span> (<span
@@ -101,9 +103,7 @@
         <input type="number" id="input-limite-categoria" placeholder="Definir Limite (R$)" step="0.01" />
         <button id="btn-salvar-limite-categoria"><i class="fas fa-save"></i> Salvar Limite</button>
       </div>
-      <div id="lista-orcamentos-categorias" class="lista-orcamentos-categorias">
-        <!-- Orçamentos de categoria serão renderizados aqui -->
-      </div>
+      <div id="lista-orcamentos-categorias" class="lista-orcamentos-categorias"></div>
     </section>
 
     <!-- Seção de resumo de ganhos e gastos -->
@@ -148,13 +148,18 @@
             <i class="fas fa-sort-amount-down"></i>
           </button>
         </div>
+
+        <!-- Botão Exportar CSV -->
+        <button id="btn-exportar" class="btn-acoes">
+          <i class="fas fa-file-csv"></i> Exportar CSV
+        </button>
       </div>
 
       <ul id="lista-transacoes"></ul>
     </section>
 
     <!-- Seção dos gráficos -->
-    <section class="graficos">
+    <section id="graficos" class="graficos">
       <div class="grafico-container">
         <canvas id="graficoPizza"></canvas>
       </div>
@@ -162,6 +167,64 @@
         <canvas id="graficoLinha"></canvas>
       </div>
     </section>
+
+    <!-- Seção de Relatórios -->
+    <section id="relatorios" class="relatorios">
+      <h2><i class="fas fa-chart-line"></i> Relatórios</h2>
+
+      <div class="filter-sort-controls" style="margin-bottom:1rem; gap:.5rem">
+        <!-- Período -->
+        <input type="date" id="rel-inicio" aria-label="Data inicial">
+        <input type="date" id="rel-fim" aria-label="Data final">
+
+        <!-- Atalhos de período -->
+        <button id="rel-preset-mes" class="btn-acoes"><i class="fas fa-calendar-alt"></i> Este mês</button>
+        <button id="rel-preset-30" class="btn-acoes"><i class="fas fa-clock"></i> Últimos 30 dias</button>
+
+        <!-- Filtros de tipo -->
+        <label style="display:flex;align-items:center;gap:.35rem">
+          <input type="checkbox" id="rel-inc-receitas" checked> Receitas
+        </label>
+        <label style="display:flex;align-items:center;gap:.35rem">
+          <input type="checkbox" id="rel-inc-despesas" checked> Despesas
+        </label>
+
+        <!-- Agrupamento -->
+        <label for="rel-agrup" class="sr-only">Agrupar por</label>
+        <select id="rel-agrup" aria-label="Agrupar por">
+          <option value="mes">Mês</option>
+          <option value="dia">Dia</option>
+        </select>
+
+        <!-- Ações -->
+        <button id="rel-gerar" class="btn-acoes"><i class="fas fa-play"></i> Gerar</button>
+        <button id="rel-exportar" class="btn-acoes"><i class="fas fa-file-csv"></i> Exportar CSV</button>
+        <button id="rel-imprimir" class="btn-acoes"><i class="fas fa-print"></i> Imprimir</button>
+
+        <!-- Seed de dados de exemplo -->
+        <button id="rel-demo" class="btn-acoes">
+          <i class="fas fa-magic"></i> Carregar dados de exemplo
+        </button>
+      </div>
+
+      <!-- Resumo -->
+      <div id="rel-resumo" style="margin-bottom:1rem"></div>
+
+      <!-- Gráficos -->
+      <div class="grafico-container">
+        <canvas id="rel-grafico-linha"></canvas>
+      </div>
+      <div class="grafico-container">
+        <canvas id="rel-grafico-pizza"></canvas>
+      </div>
+
+      <!-- Top categorias -->
+      <section style="margin-top:1rem">
+        <h3>Top Categorias</h3>
+        <ul id="rel-top-categorias"></ul>
+      </section>
+    </section>
+
   </div>
 
   <!-- Rodapé da página -->
@@ -174,7 +237,7 @@
             class="fas fa-list"></i></a>
         <a href="#graficos" title="Gráficos" aria-label="Ir para a seção de gráficos"><i
             class="fas fa-chart-line"></i></a>
-        <a href="#limite" title="Limite" aria-label="Ir para a seção de limite"><i class="fas fa-bullseye"></i></a>
+        <a href="#limite-app" title="Limite" aria-label="Ir para a seção de limite"><i class="fas fa-bullseye"></i></a>
         <a href="#orcamento-categorias" title="Orçamento por Categoria"
           aria-label="Ir para a seção de orçamento por categoria"><i class="fas fa-money-check-alt"></i></a>
       </div>
@@ -184,7 +247,7 @@
   <!-- Modal para edição de transação -->
   <div id="modal-editar" class="modal">
     <div class="modal-content">
-      <span class="close-btn" onclick="fecharModalEdicao()" aria-label="Fechar modal de edição">&times;</span>
+      <span id="modal-editar-close" class="close-btn" aria-label="Fechar modal de edição">&times;</span>
       <h2>Editar Transação</h2>
       <form id="form-editar">
         <input type="hidden" id="edit-id" name="edit-id">
@@ -206,14 +269,15 @@
         <input type="date" id="edit-data" name="edit-data" required />
         <div class="modal-buttons">
           <button type="submit" class="modal-salvar-btn"><i class="fas fa-save"></i> Salvar</button>
-          <button type="button" class="modal-cancelar-btn" onclick="fecharModalEdicao()"><i class="fas fa-times"></i>
-            Cancelar</button>
+          <button type="button" id="editar-cancelar-btn" class="modal-cancelar-btn">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Novo Modal para Confirmação de Exclusão -->
+  <!-- Modal para Confirmação de Exclusão -->
   <div id="modal-confirmacao" class="modal">
     <div class="modal-content">
       <h2>Confirmar Exclusão</h2>
@@ -224,6 +288,11 @@
       </div>
     </div>
   </div>
+
+  <!-- Botão flutuante de Ajuda -->
+  <a href="help.html" id="btn-ajuda-flutuante" class="fab-ajuda" aria-label="Abrir ajuda">
+    <i class="fas fa-question"></i>
+  </a>
 
   <script type="module" src="app.js"></script>
 </body>

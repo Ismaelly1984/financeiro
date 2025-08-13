@@ -1,18 +1,22 @@
+// dom.js (atualizado e completo)
 import { emit } from './eventEmitter.js';
 import { ICONS, EVENT_NAMES } from './config.js';
 
-// =========================
-// Referências DOM
-// =========================
+/* =========================
+   Referências DOM
+   ========================= */
 export const form = document.getElementById('form');
 export const lista = document.getElementById('lista-transacoes');
+
 export const saldoSpan = document.getElementById('saldo');
 export const totalReceitasSpan = document.getElementById('total-receitas');
 export const totalDespesasSpan = document.getElementById('total-despesas');
-export const limiteInput = document.getElementById("limite");
-export const barraProgresso = document.getElementById("barra-progresso");
-export const gastoAtualSpan = document.getElementById("gasto-atual");
-export const porcentagemGastoSpan = document.getElementById("porcentagem-gasto");
+
+export const limiteInput = document.getElementById('limite');
+export const barraProgresso = document.getElementById('barra-progresso');
+export const gastoAtualSpan = document.getElementById('gasto-atual');
+export const porcentagemGastoSpan = document.getElementById('porcentagem-gasto');
+
 export const toggleTemaBtn = document.getElementById('toggle-tema');
 
 export const modalEditar = document.getElementById('modal-editar');
@@ -38,19 +42,19 @@ export const inputLimiteCategoria = document.getElementById('input-limite-catego
 export const btnSalvarLimiteCategoria = document.getElementById('btn-salvar-limite-categoria');
 export const listaOrcamentosCategorias = document.getElementById('lista-orcamentos-categorias');
 
-// =========================
-// Helpers
-// =========================
+/* =========================
+   Helpers
+   ========================= */
 const moneyBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-export const formatBRL = (n) => moneyBRL.format(Number.isFinite(n) ? n : 0);
+export const formatBRL = (n) => moneyBRL.format(Number.isFinite(+n) ? +n : 0);
 
 export function getIconClass(categoria) {
-  return ICONS[categoria] || "fa-folder";
+  return ICONS[categoria] || 'fa-folder';
 }
 
-// =========================
-// Mensagens
-// =========================
+/* =========================
+   Mensagens (toast)
+   ========================= */
 export function exibirMensagem(texto, tipo = 'info', duracao = 3000) {
   const mensagemDiv = document.getElementById('mensagem-app');
   if (!mensagemDiv) return;
@@ -63,17 +67,21 @@ export function exibirMensagem(texto, tipo = 'info', duracao = 3000) {
   }, duracao);
 }
 
-// =========================
-// Item de transação
-// =========================
+/* =========================
+   Item de transação
+   ========================= */
 export function criarItemTransacao(t) {
   const li = document.createElement('li');
   li.classList.add('transacao-item', t.tipo, 'nova');
   li.dataset.id = t.id;
   li.tabIndex = 0;
   li.setAttribute('role', 'listitem');
-  li.setAttribute('aria-label', `${t.descricao}, ${t.categoria}, ${t.data}, valor ${formatBRL(parseFloat(t.valor))}`);
+  li.setAttribute(
+    'aria-label',
+    `${t.descricao}, ${t.categoria}, ${t.data}, valor ${formatBRL(parseFloat(t.valor))}`
+  );
 
+  // bloco info (ícone, descrição, data/categoria)
   const info = document.createElement('div');
   info.className = 'transacao-info';
 
@@ -91,10 +99,12 @@ export function criarItemTransacao(t) {
 
   info.append(icon, desc, dataCat);
 
+  // valor
   const valor = document.createElement('span');
   valor.className = 'valor';
   valor.textContent = formatBRL(parseFloat(t.valor));
 
+  // ações
   const actions = document.createElement('div');
   actions.className = 'transacao-actions';
 
@@ -110,24 +120,33 @@ export function criarItemTransacao(t) {
   btnDelete.title = 'Excluir';
   btnDelete.setAttribute('aria-label', 'Excluir transação');
   btnDelete.innerHTML = '<i class="fas fa-trash-alt" aria-hidden="true"></i>';
-  btnDelete.addEventListener('click', (e) => emit(EVENT_NAMES.DELETE_REQUESTED, { event: e, id: t.id }));
+  btnDelete.addEventListener('click', (e) =>
+    emit(EVENT_NAMES.DELETE_REQUESTED, { event: e, id: t.id })
+  );
 
   actions.append(btnEdit, btnDelete);
   li.append(info, valor, actions);
 
+  // animação de entrada
   requestAnimationFrame(() => li.classList.add('show'));
 
+  // acessibilidade por teclado
   li.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); btnEdit.click(); }
-    else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); btnDelete.click(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      btnEdit.click();
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault();
+      btnDelete.click();
+    }
   });
 
   return li;
 }
 
-// =========================
-// Renderização e ordenação
-// =========================
+/* =========================
+   Renderização e ordenação
+   ========================= */
 export function renderizarTransacoes(transacoes, filtroTipo, filtroCategoria, ordenarPor, ordemAscendente) {
   if (!lista) return;
   lista.setAttribute('role', 'list');
@@ -146,13 +165,13 @@ export function renderizarTransacoes(transacoes, filtroTipo, filtroCategoria, or
     return;
   }
 
-  filtradas.forEach(t => lista.appendChild(criarItemTransacao(t)));
+  filtradas.forEach((t) => lista.appendChild(criarItemTransacao(t)));
 }
 
 function filtrarEOrdenar(array, filtroTipo, filtroCategoria, ordenarPor, ordemAscendente) {
-  const filtradas = (array || []).filter(t => {
-    const tipoOK = (filtroTipo === 'todos') || (t.tipo === filtroTipo);
-    const catOK = (filtroCategoria === 'todas') || (t.categoria === filtroCategoria);
+  const filtradas = (array || []).filter((t) => {
+    const tipoOK = filtroTipo === 'todos' || t.tipo === filtroTipo;
+    const catOK = filtroCategoria === 'todas' || t.categoria === filtroCategoria;
     return tipoOK && catOK;
   });
 
@@ -181,9 +200,9 @@ function filtrarEOrdenar(array, filtroTipo, filtroCategoria, ordenarPor, ordemAs
   return filtradas;
 }
 
-// =========================
-// Modais
-// =========================
+/* =========================
+   Modais
+   ========================= */
 export function abrirModalEdicao(t) {
   if (!modalEditar) return;
   editIdInput.value = t.id;
@@ -193,6 +212,7 @@ export function abrirModalEdicao(t) {
   editCategoriaSelect.value = t.categoria;
   editDataInput.value = t.data;
   modalEditar.style.display = 'block';
+  // foco no primeiro campo para acessibilidade
   setTimeout(() => editDescricaoInput?.focus(), 0);
 }
 
@@ -206,10 +226,11 @@ export function prepararParaRemocao(e, onConfirm) {
   e.stopPropagation();
   modalConfirmacao.style.display = 'flex';
 
-  // evita empilhar handlers
+  // Evita empilhar handlers: clona e substitui os botões
   confirmarExclusaoBtn.replaceWith(confirmarExclusaoBtn.cloneNode(true));
   cancelarExclusaoBtn.replaceWith(cancelarExclusaoBtn.cloneNode(true));
 
+  // Re-obtem referências pelos mesmos IDs
   const novoConfirmar = document.getElementById('confirmar-exclusao-btn');
   const novoCancelar = document.getElementById('cancelar-exclusao-btn');
 

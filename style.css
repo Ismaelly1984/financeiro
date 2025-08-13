@@ -248,3 +248,55 @@ section{background-color:var(--cor-secundaria);padding:1.5rem;margin-bottom:1.5r
   /* gráficos mais confortáveis no mobile */
   .grafico-container{height:clamp(200px, 34vh, 300px)}
 }
+.btn-acoes {
+  background-color: var(--cor-primaria);
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.3s;
+}
+
+.btn-acoes:hover {
+  background-color: var(--cor-primaria-hover, #0056b3);
+}
+/* Botão flutuante de Ajuda (FAB) */
+.fab-ajuda{
+  position:fixed;
+  right:20px;
+  bottom:24px;
+  width:56px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background-color:var(--cor-primaria);
+  color:#fff;
+  box-shadow:var(--sombra-escura);
+  z-index:1003;
+  text-decoration:none;
+  transition:transform .15s ease,filter .2s ease, box-shadow .2s ease;
+}
+.fab-ajuda i{
+  font-size:1.25rem;
+  line-height:1;
+}
+.fab-ajuda:hover{ filter:brightness(1.05); box-shadow:0 12px 22px rgba(0,0,0,.25); }
+.fab-ajuda:active{ transform:translateY(1px); }
+
+/* foco teclado/acessibilidade */
+.fab-ajuda:focus-visible{
+  outline:3px solid color-mix(in srgb, var(--cor-primaria) 60%, #fff);
+  outline-offset:3px;
+}
+
+/* reduz animações se o usuário preferir */
+@media (prefers-reduced-motion: reduce){
+  .fab-ajuda{ transition:none }
+}
