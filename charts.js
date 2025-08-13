@@ -1,6 +1,6 @@
 import { on } from './eventEmitter.js';
-import { EVENT_NAMES, COLORS, ICONS } from './config.js';
-import { calcularSaldo, getTransacoes } from './finance.js';
+import { EVENT_NAMES } from './config.js';
+import { getTransacoes } from './finance.js';
 
 export let graficoPizza = null;
 export let graficoLinha = null;
@@ -14,7 +14,7 @@ function cssVar(name) {
 function chartTheme() {
   return {
     text: cssVar('--cor-texto'),
-    grid: 'rgba(148, 163, 184, 0.15)', // linha sutil
+    grid: 'rgba(148, 163, 184, 0.15)',
     primary: cssVar('--cor-primaria'),
     success: cssVar('--cor-sucesso'),
     danger: cssVar('--cor-aviso'),
@@ -24,23 +24,47 @@ function chartTheme() {
 
 function applyChartDefaults() {
   const t = chartTheme();
+  if (typeof Chart === 'undefined') return;
+
   // fontes / cores globais
-  Chart.defaults.font.family = "'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'";
+  Chart.defaults.font.family =
+    "'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'";
   Chart.defaults.color = t.text;
+
   // legendas e tooltip
+  Chart.defaults.plugins.legend = Chart.defaults.plugins.legend || {};
+  Chart.defaults.plugins.legend.labels = Chart.defaults.plugins.legend.labels || {};
   Chart.defaults.plugins.legend.labels.color = t.text;
+
+  Chart.defaults.plugins.tooltip = Chart.defaults.plugins.tooltip || {};
   Chart.defaults.plugins.tooltip.titleColor = t.text;
   Chart.defaults.plugins.tooltip.bodyColor = t.text;
-  // grid
-  Chart.defaults.scales.category.grid.color = t.grid;
-  Chart.defaults.scales.linear.grid.color = t.grid;
+
+  // v4: configurar eixos diretamente em x/y
+  Chart.defaults.scales = Chart.defaults.scales || {};
+  Chart.defaults.scales.x = Chart.defaults.scales.x || {};
+  Chart.defaults.scales.y = Chart.defaults.scales.y || {};
+
+  Chart.defaults.scales.x.ticks = Chart.defaults.scales.x.ticks || {};
+  Chart.defaults.scales.y.ticks = Chart.defaults.scales.y.ticks || {};
+  Chart.defaults.scales.x.grid  = Chart.defaults.scales.x.grid  || {};
+  Chart.defaults.scales.y.grid  = Chart.defaults.scales.y.grid  || {};
+
+  Chart.defaults.scales.x.ticks.color = t.text;
+  Chart.defaults.scales.y.ticks.color = t.text;
+  Chart.defaults.scales.x.grid.color  = t.grid;
+  Chart.defaults.scales.y.grid.color  = t.grid;
 }
+
+// Exporta para reaplicar imediatamente quando o tema mudar
+export function reapplyChartTheme() {
+  applyChartDefaults();
+  atualizarGraficos(); // recria para aplicar as novas cores
+}
+
 applyChartDefaults();
 
-// Reaplica defaults quando o tema mudar / aba voltar
-window.addEventListener('storage', (e) => {
-  if (e.key === 'tema') applyChartDefaults();
-});
+// Reaplica defaults quando a aba volta (garante consistência)
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) applyChartDefaults();
 });
@@ -61,6 +85,9 @@ function atualizarGraficos() {
    Pizza: Gastos por categoria
    ========================= */
 function atualizarGraficoPizza() {
+  const canvas = document.getElementById('graficoPizza');
+  if (!canvas || typeof Chart === 'undefined') return;
+
   const transacoesAtuais = getTransacoes();
   const despesas = Object.values(transacoesAtuais).filter(t => t.tipo === 'despesa');
   const gastosPorCategoria = despesas.reduce((acc, t) => {
@@ -76,15 +103,15 @@ function atualizarGraficoPizza() {
     const mapa = {
       alimentacao: t.primary,
       transporte: t.success,
-      lazer: '#F59E0B',    // amber-500
-      saude: '#06B6D4',    // cyan-500
-      educacao: '#8B5CF6', // violet-500
-      outros: '#9CA3AF'    // slate-400
+      lazer: '#F59E0B',
+      saude: '#06B6D4',
+      educacao: '#8B5CF6',
+      outros: '#9CA3AF'
     };
     return mapa[cat] || t.primary;
   });
 
-  const ctx = document.getElementById('graficoPizza').getContext('2d');
+  const ctx = canvas.getContext('2d');
   if (graficoPizza) graficoPizza.destroy();
 
   graficoPizza = new Chart(ctx, {
@@ -94,28 +121,14 @@ function atualizarGraficoPizza() {
       datasets: [{
         data,
         backgroundColor: cores,
-        hoverBackgroundColor: cores.map(c => `${c}CC`), // ~80% opacidade
+        hoverBackgroundColor: cores.map(c => `${c}CC`),
         borderWidth: 1
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'right'
-        },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              const val = context.parsed;
-              const label = context.label || '';
-              const dinheiro = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-              return `${label}: ${dinheiro}`;
-            }
-          }
-        }
-      }
+      plugins: { legend: { position: 'right' } }
     }
   });
 }
@@ -124,6 +137,9 @@ function atualizarGraficoPizza() {
    Linha: Gastos mensais
    ========================= */
 function atualizarGraficoLinha() {
+  const canvas = document.getElementById('graficoLinha');
+  if (!canvas || typeof Chart === 'undefined') return;
+
   const transacoesAtuais = getTransacoes();
   const despesas = Object.values(transacoesAtuais).filter(t => t.tipo === 'despesa');
   const gastosPorMes = despesas.reduce((acc, t) => {
@@ -135,10 +151,9 @@ function atualizarGraficoLinha() {
   const labels = Object.keys(gastosPorMes).sort();
   const data = labels.map(mes => gastosPorMes[mes]);
 
-  const ctx = document.getElementById('graficoLinha').getContext('2d');
-  if (graficoLinha) graficoLinha.destroy();
-
   const t = chartTheme();
+  const ctx = canvas.getContext('2d');
+  if (graficoLinha) graficoLinha.destroy();
 
   graficoLinha = new Chart(ctx, {
     type: 'line',
@@ -148,7 +163,7 @@ function atualizarGraficoLinha() {
         label: 'Gastos Mensais',
         data,
         borderColor: t.danger,
-        backgroundColor: `${t.danger}33`, // ~20% opacidade
+        backgroundColor: `${t.danger}33`,
         fill: true,
         tension: 0.25,
         pointRadius: 3,
@@ -158,19 +173,12 @@ function atualizarGraficoLinha() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      // Em v4, as opções de cor já foram definidas em defaults; aqui só garantimos beginAtZero
       scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { color: chartTheme().text },
-          grid: { color: chartTheme().grid }
-        },
-        x: {
-          ticks: { color: chartTheme().text },
-          grid: { color: chartTheme().grid }
-        }
+        y: { beginAtZero: true }
       },
       plugins: {
-        legend: { labels: { color: chartTheme().text } },
+        legend: { labels: { usePointStyle: false } },
         tooltip: { intersect: false, mode: 'index' }
       }
     }
