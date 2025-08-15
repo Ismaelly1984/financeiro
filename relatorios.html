@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MeuFinanceiro — Relatórios</title>
+  <meta name="description" content="Gere relatórios por período, tipo e categoria."/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <h1 class="logo">MeuFinanceiro</h1>
+      <button class="hamburger" id="hamburger" aria-label="Abrir menu">&#9776;</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Resumo</a></li>
+        <li><a href="transacoes.html">Transações</a></li>
+        <li><a href="graficos.html">Gráficos</a></li>
+        <li><a href="relatorios.html">Relatórios</a></li>
+        <li><a href="help.html">Ajuda</a></li>
+        <li>
+          <button id="toggle-tema" aria-label="Alternar tema claro/escuro">
+            <i class="fas fa-moon"></i>
+          </button>
+        </li>
+      </ul>
+
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1><i class="fas fa-chart-line"></i> Relatórios</h1>
+
+    <div class="filter-sort-controls" style="margin-bottom:1rem; gap:.5rem">
+      <input type="date" id="rel-inicio" aria-label="Data inicial">
+      <input type="date" id="rel-fim" aria-label="Data final">
+      <button id="rel-preset-mes" class="btn-acoes"><i class="fas fa-calendar-alt"></i> Este mês</button>
+      <button id="rel-preset-30" class="btn-acoes"><i class="fas fa-clock"></i> Últimos 30 dias</button>
+      <label style="display:flex;align-items:center;gap:.35rem">
+        <input type="checkbox" id="rel-inc-receitas" checked> Receitas
+      </label>
+      <label style="display:flex;align-items:center;gap:.35rem">
+        <input type="checkbox" id="rel-inc-despesas" checked> Despesas
+      </label>
+      <select id="rel-agrup" aria-label="Agrupar por">
+        <option value="mes">Mês</option>
+        <option value="dia">Dia</option>
+      </select>
+      <button id="rel-gerar" class="btn-acoes"><i class="fas fa-play"></i> Gerar</button>
+      <button id="rel-exportar" class="btn-acoes"><i class="fas fa-file-csv"></i> Exportar CSV</button>
+      <button id="rel-imprimir" class="btn-acoes"><i class="fas fa-print"></i> Imprimir</button>
+      <button id="rel-demo" class="btn-acoes"><i class="fas fa-magic"></i> Carregar dados de exemplo</button>
+    </div>
+
+    <div id="rel-resumo" style="margin-bottom:1rem"></div>
+
+    <div class="grafico-container"><canvas id="rel-grafico-linha"></canvas></div>
+    <div class="grafico-container"><canvas id="rel-grafico-pizza"></canvas></div>
+
+    <section style="margin-top:1rem">
+      <h3>Top Categorias</h3>
+      <ul id="rel-top-categorias"></ul>
+    </section>
+  </main>
+
+     <!-- Rodapé -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
+            <a href="transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
+            <a href="graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
+            <a href="index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i
+                    class="fas fa-bullseye"></i></a>
+            <a href="index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i
+                    class="fas fa-money-check-alt"></i></a>
+        </div>
+    </footer>
+
+
+
+  <a href="help.html" id="btn-ajuda-flutuante" class="fab-ajuda" aria-label="Abrir ajuda">
+    <i class="fas fa-question"></i>
+  </a>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

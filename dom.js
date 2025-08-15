@@ -1,9 +1,9 @@
-// dom.js (atualizado e completo)
+// dom.js (completo, robusto e multi-páginas)
 import { emit } from './eventEmitter.js';
-import { ICONS, EVENT_NAMES } from './config.js';
+import { ICONS, EVENT_NAMES, getLabelFor } from './config.js';
 
 /* =========================
-   Referências DOM
+   Referências DOM (podem ser null em algumas páginas)
    ========================= */
 export const form = document.getElementById('form');
 export const lista = document.getElementById('lista-transacoes');
@@ -52,12 +52,31 @@ export function getIconClass(categoria) {
   return ICONS[categoria] || 'fa-folder';
 }
 
+/**
+ * Marca o link ativo no menu e no rodapé, comparando o href com a página atual.
+ * Chame no boot do app: marcarNavAtiva()
+ */
+export function marcarNavAtiva() {
+  const atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  document.querySelectorAll('.nav-links a, .footer-links a').forEach((a) => {
+    const alvo = (a.getAttribute('href') || '').toLowerCase();
+    if (!alvo) return;
+    if (alvo === atual) a.classList.add('active');
+    else a.classList.remove('active');
+  });
+}
+
 /* =========================
    Mensagens (toast)
    ========================= */
 export function exibirMensagem(texto, tipo = 'info', duracao = 3000) {
-  const mensagemDiv = document.getElementById('mensagem-app');
-  if (!mensagemDiv) return;
+  let mensagemDiv = document.getElementById('mensagem-app');
+  if (!mensagemDiv) {
+    mensagemDiv = document.createElement('div');
+    mensagemDiv.id = 'mensagem-app';
+    mensagemDiv.className = 'mensagem-app';
+    document.body.prepend(mensagemDiv);
+  }
   mensagemDiv.textContent = texto;
   mensagemDiv.setAttribute('role', 'status');
   mensagemDiv.setAttribute('aria-live', 'polite');
@@ -76,10 +95,7 @@ export function criarItemTransacao(t) {
   li.dataset.id = t.id;
   li.tabIndex = 0;
   li.setAttribute('role', 'listitem');
-  li.setAttribute(
-    'aria-label',
-    `${t.descricao}, ${t.categoria}, ${t.data}, valor ${formatBRL(parseFloat(t.valor))}`
-  );
+ li.setAttribute('aria-label', `${t.descricao}, ${getLabelFor(t.categoria)}, ${t.data}, valor ${formatBRL(parseFloat(t.valor))}`);
 
   // bloco info (ícone, descrição, data/categoria)
   const info = document.createElement('div');
@@ -95,8 +111,7 @@ export function criarItemTransacao(t) {
 
   const dataCat = document.createElement('span');
   dataCat.className = 'data';
-  dataCat.textContent = `${t.data} - ${t.categoria}`;
-
+  dataCat.textContent = `${t.data} — ${getLabelFor(t.categoria)}`;
   info.append(icon, desc, dataCat);
 
   // valor
@@ -212,8 +227,7 @@ export function abrirModalEdicao(t) {
   editCategoriaSelect.value = t.categoria;
   editDataInput.value = t.data;
   modalEditar.style.display = 'block';
-  // foco no primeiro campo para acessibilidade
-  setTimeout(() => editDescricaoInput?.focus(), 0);
+  setTimeout(() => editDescricaoInput?.focus(), 0); // foco inicial
 }
 
 export function fecharModalEdicao() {
@@ -226,19 +240,19 @@ export function prepararParaRemocao(e, onConfirm) {
   e.stopPropagation();
   modalConfirmacao.style.display = 'flex';
 
-  // Evita empilhar handlers: clona e substitui os botões
-  confirmarExclusaoBtn.replaceWith(confirmarExclusaoBtn.cloneNode(true));
-  cancelarExclusaoBtn.replaceWith(cancelarExclusaoBtn.cloneNode(true));
+  // Evita empilhar handlers
+  confirmarExclusaoBtn?.replaceWith(confirmarExclusaoBtn.cloneNode(true));
+  cancelarExclusaoBtn?.replaceWith(cancelarExclusaoBtn.cloneNode(true));
 
   // Re-obtem referências pelos mesmos IDs
   const novoConfirmar = document.getElementById('confirmar-exclusao-btn');
   const novoCancelar = document.getElementById('cancelar-exclusao-btn');
 
-  novoConfirmar.addEventListener('click', () => {
+  novoConfirmar?.addEventListener('click', () => {
     onConfirm?.();
     modalConfirmacao.style.display = 'none';
   });
-  novoCancelar.addEventListener('click', () => {
+  novoCancelar?.addEventListener('click', () => {
     modalConfirmacao.style.display = 'none';
   });
 }

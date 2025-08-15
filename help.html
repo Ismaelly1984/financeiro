@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ajuda • MeuFinanceiro</title>
 
-  <!-- Reaproveita o estilo/tema do app -->
+  <!-- Estilo/tema do app -->
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -33,15 +34,13 @@
   </style>
 </head>
 <body>
-  <!-- Navbar fixa no padrão do app -->
+  <!-- Navbar enxuta (sem Limite/Orçamento) -->
   <nav class="navbar" role="navigation" aria-label="Navegação principal">
     <div class="navbar-container">
       <a href="index.html" class="back-link" aria-label="Voltar para o app">
         <i class="fas fa-arrow-left"></i> Voltar
       </a>
       <h1 class="logo" aria-label="MeuFinanceiro - Ajuda">Ajuda</h1>
-
-      <!-- mesmo botão de tema do app -->
       <button id="toggle-tema" aria-label="Alternar tema claro/escuro">
         <i class="fas fa-moon"></i>
       </button>
@@ -74,19 +73,19 @@
       </div>
     </nav>
 
-    <!-- (demais seções iguais à versão anterior) -->
+    <!-- Seções (mantenha/complete as demais conforme sua versão) -->
     <section id="inicio" class="help-section">
       <h3>Início rápido</h3>
       <ol>
         <li>Abra <em>Transações</em> e clique em <strong>Adicionar</strong>.</li>
         <li>Informe <em>Descrição</em>, <em>Valor</em>, <em>Tipo</em>, <em>Categoria</em> e <em>Data</em>.</li>
-        <li>Defina seu <em>Limite</em> em <strong>Controle de Limite</strong> (opcional).</li>
-        <li>Use <em>Orçamento por Categoria</em> para definir metas específicas.</li>
+        <li>Defina seu <em>Limite</em> no <strong>Resumo</strong>.</li>
+        <li>Use <em>Orçamento por Categoria</em> para metas específicas (também no <strong>Resumo</strong>).</li>
         <li>Acompanhe tudo em <em>Gráficos</em> e no <em>Resumo</em>.</li>
       </ol>
     </section>
 
-    <!-- ... copie aqui as demais seções que te entreguei antes (Transações, Filtros, Orçamentos, Gráficos, Exportação, Instalação, Atalhos, FAQ, Privacidade, Suporte) ... -->
+    <!-- ... copie aqui suas outras seções: Transações, Filtros, Orçamentos, Gráficos, Exportação, Instalação, Atalhos, FAQ, Privacidade ... -->
 
     <section id="suporte" class="help-section">
       <h3>Suporte</h3>
@@ -98,28 +97,31 @@
     </section>
   </main>
 
+  <!-- Rodapé -->
   <footer class="footer">
     <div class="footer-container">
       <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
       <div class="footer-links">
-        <a href="index.html" title="App"><i class="fas fa-house"></i></a>
-        <a href="#faq" title="FAQ"><i class="fas fa-circle-question"></i></a>
+        <a href="index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
+        <a href="transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
+        <a href="graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
+        <a href="index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i class="fas fa-bullseye"></i></a>
+        <a href="index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i
+            class="fas fa-money-check-alt"></i></a>
       </div>
     </div>
   </footer>
 
-  <!-- Script de tema (mesma lógica do app, mas isolada para a página de ajuda) -->
+  <!-- Tema (isolado, igual app) -->
   <script>
     (function setupTema() {
       const btn = document.getElementById('toggle-tema');
       const root = document.documentElement;
-      // aplica o tema salvo
       const temaSalvo = localStorage.getItem('tema');
       if (temaSalvo === 'light') {
         root.classList.add('light');
         btn?.querySelector('i')?.classList.replace('fa-moon', 'fa-sun');
       }
-      // toggle
       btn?.addEventListener('click', () => {
         root.classList.toggle('light');
         const light = root.classList.contains('light');
@@ -128,7 +130,6 @@
         if (light) { icon.classList.replace('fa-moon', 'fa-sun'); }
         else { icon.classList.replace('fa-sun', 'fa-moon'); }
       });
-      // se outro separador mudar o tema, atualiza ícone aqui também
       window.addEventListener('storage', (e) => {
         if (e.key === 'tema') {
           const light = localStorage.getItem('tema') === 'light';

@@ -1,10 +1,10 @@
-// app.js (completo, organizado e funcional)
+// app.js (multi-páginas: robusto e idempotente)
 import * as dom from './dom.js';
 import * as storage from './storage.js';
 import * as finance from './finance.js';
 import * as charts from './charts.js';
 import { on, emit } from './eventEmitter.js';
-import { EVENT_NAMES } from './config.js';
+import { EVENT_NAMES, getLabelFor, getColorFor } from './config.js';
 
 let ordemAscendente = JSON.parse(localStorage.getItem('ordemAscendente') ?? 'false');
 let idParaExcluir = null;
@@ -15,79 +15,88 @@ let orcamentosPorCategoria = {};
 const ALERT_THRESHOLDS = { warn: 0.8, exceed: 1.0 }; // 80% e 100%
 let _alertState = { geral: null, categorias: {} };
 
+const has = (sel) => !!document.querySelector(sel);
+
 /* =========================
    Boot
    ========================= */
 function init() {
-  // Core
+  // Core (sempre seguro)
   finance.init();
-  charts.init();
+
+  // Charts só quando houver canvas relevante
+  const hasCharts =
+    has('#graficoPizza') || has('#graficoLinha') ||
+    has('#rel-grafico-linha') || has('#rel-grafico-pizza');
+  if (hasCharts && typeof charts.init === 'function') charts.init();
 
   // Estado salvo
   limiteGasto = storage.carregarLimiteGasto();
   orcamentosPorCategoria = storage.carregarOrcamentosPorCategoria();
   restaurarPreferenciasUI();
 
-  // Listeners — UI principal
-  dom.form.addEventListener('submit', handleAddTransaction);
-  dom.formEditar.addEventListener('submit', handleEditTransaction);
-  dom.limiteInput.addEventListener('change', handleSetLimit);
-  dom.toggleTemaBtn.addEventListener('click', toggleTema);
+  // Listeners — UI principal (com guards por página)
+  if (dom.form) dom.form.addEventListener('submit', handleAddTransaction);
+  if (dom.formEditar) dom.formEditar.addEventListener('submit', handleEditTransaction);
+  if (dom.limiteInput) dom.limiteInput.addEventListener('change', handleSetLimit);
+  if (dom.toggleTemaBtn) dom.toggleTemaBtn.addEventListener('click', toggleTema);
 
-  dom.filtroTipoSelect.addEventListener('change', () => { salvarPreferenciasUI(); updateUI(); });
-  dom.filtroCategoriaSelect.addEventListener('change', () => { salvarPreferenciasUI(); updateUI(); });
-  dom.ordenarPorSelect.addEventListener('change', () => { salvarPreferenciasUI(); updateUI(); });
-  dom.toggleOrdenacaoBtn.addEventListener('click', () => { toggleOrdenacao(); salvarPreferenciasUI(); });
+  if (dom.filtroTipoSelect) dom.filtroTipoSelect.addEventListener('change', () => { salvarPreferenciasUI(); updateUI(); });
+  if (dom.filtroCategoriaSelect) dom.filtroCategoriaSelect.addEventListener('change', () => { salvarPreferenciasUI(); updateUI(); });
+  if (dom.ordenarPorSelect) dom.ordenarPorSelect.addEventListener('change', () => { salvarPreferenciasUI(); updateUI(); });
+  if (dom.toggleOrdenacaoBtn) dom.toggleOrdenacaoBtn.addEventListener('click', () => { toggleOrdenacao(); salvarPreferenciasUI(); });
 
   // Orçamento por categoria
-  dom.btnSalvarLimiteCategoria?.addEventListener('click', handleSaveBudget);
+  if (dom.btnSalvarLimiteCategoria) dom.btnSalvarLimiteCategoria.addEventListener('click', handleSaveBudget);
 
   // Exportar CSV (todas transações)
   document.getElementById('btn-exportar')?.addEventListener('click', exportarCSV);
 
   // -------------------------
-  // Relatórios — TODOS os listeners ficam dentro do init
+  // Relatórios — somente se os controles existirem
   // -------------------------
-  document.getElementById('rel-gerar')?.addEventListener('click', gerarRelatorio);
-  document.getElementById('rel-exportar')?.addEventListener('click', exportarRelatorioCSV);
-  document.getElementById('rel-imprimir')?.addEventListener('click', () => window.print());
-  document.getElementById('rel-inicio')?.addEventListener('change', gerarRelatorio);
-  document.getElementById('rel-fim')?.addEventListener('change', gerarRelatorio);
+  const relOn = has('#rel-agrup') || has('#rel-gerar') || has('#rel-grafico-linha') || has('#rel-grafico-pizza');
 
-  document.getElementById('rel-preset-mes')?.addEventListener('click', () => {
-    const { inicio, fim } = rangePreset('mes');
-    const iniEl = document.getElementById('rel-inicio');
-    const fimEl = document.getElementById('rel-fim');
-    if (iniEl) iniEl.value = inicio;
-    if (fimEl) fimEl.value = fim;
-    gerarRelatorio();
-  });
+  if (relOn) {
+    document.getElementById('rel-gerar')?.addEventListener('click', gerarRelatorio);
+    document.getElementById('rel-exportar')?.addEventListener('click', exportarRelatorioCSV);
+    document.getElementById('rel-imprimir')?.addEventListener('click', () => window.print());
+    document.getElementById('rel-inicio')?.addEventListener('change', gerarRelatorio);
+    document.getElementById('rel-fim')?.addEventListener('change', gerarRelatorio);
 
-  document.getElementById('rel-preset-30')?.addEventListener('click', () => {
-    const { inicio, fim } = rangePreset('30');
-    const iniEl = document.getElementById('rel-inicio');
-    const fimEl = document.getElementById('rel-fim');
-    if (iniEl) iniEl.value = inicio;
-    if (fimEl) fimEl.value = fim;
-    gerarRelatorio();
-  });
+    document.getElementById('rel-preset-mes')?.addEventListener('click', () => {
+      const { inicio, fim } = rangePreset('mes');
+      const iniEl = document.getElementById('rel-inicio');
+      const fimEl = document.getElementById('rel-fim');
+      if (iniEl) iniEl.value = inicio;
+      if (fimEl) fimEl.value = fim;
+      gerarRelatorio();
+    });
 
-  document.getElementById('rel-inc-receitas')?.addEventListener('change', gerarRelatorio);
-  document.getElementById('rel-inc-despesas')?.addEventListener('change', gerarRelatorio);
-  document.getElementById('rel-agrup')?.addEventListener('change', gerarRelatorio);
+    document.getElementById('rel-preset-30')?.addEventListener('click', () => {
+      const { inicio, fim } = rangePreset('30');
+      const iniEl = document.getElementById('rel-inicio');
+      const fimEl = document.getElementById('rel-fim');
+      if (iniEl) iniEl.value = inicio;
+      if (fimEl) fimEl.value = fim;
+      gerarRelatorio();
+    });
 
-  // Demo data (semente)
-  document.getElementById('rel-demo')?.addEventListener('click', carregarDadosDeExemplo);
+    document.getElementById('rel-inc-receitas')?.addEventListener('change', gerarRelatorio);
+    document.getElementById('rel-inc-despesas')?.addEventListener('change', gerarRelatorio);
+    document.getElementById('rel-agrup')?.addEventListener('change', gerarRelatorio);
+    document.getElementById('rel-demo')?.addEventListener('click', carregarDadosDeExemplo);
+  }
 
   // Modal edição — fechar/cancelar
-  document.getElementById('modal-editar-close')?.addEventListener('click', () => dom.fecharModalEdicao());
-  document.getElementById('editar-cancelar-btn')?.addEventListener('click', () => dom.fecharModalEdicao());
+  document.getElementById('modal-editar-close')?.addEventListener('click', () => dom.fecharModalEdicao?.());
+  document.getElementById('editar-cancelar-btn')?.addEventListener('click', () => dom.fecharModalEdicao?.());
 
   // FAB ajuda — limpa modais antes de sair
   const fabAjuda = document.getElementById('btn-ajuda-flutuante');
   if (fabAjuda) {
     fabAjuda.addEventListener('click', () => {
-      if (dom.modalEditar?.style.display === 'block') dom.fecharModalEdicao();
+      if (dom.modalEditar?.style.display === 'block') dom.fecharModalEdicao?.();
     });
   }
 
@@ -106,15 +115,15 @@ function init() {
 
   // Fechar modais clicando fora
   window.addEventListener('click', (e) => {
-    if (e.target === dom.modalEditar) dom.fecharModalEdicao();
+    if (e.target === dom.modalEditar) dom.fecharModalEdicao?.();
     if (e.target === dom.modalConfirmacao) fecharModalConfirmacao();
   });
 
   // Render inicial
   emit(EVENT_NAMES.DATA_UPDATED);
 
-  // Gera relatório inicial (vazio ou com período definido)
-  gerarRelatorio();
+  // Gera relatório inicial (se estiver na página de relatórios)
+  if (relOn) gerarRelatorio();
 
   // Service Worker
   if ('serviceWorker' in navigator) {
@@ -131,22 +140,24 @@ function restaurarPreferenciasUI() {
   const temaSalvo = localStorage.getItem('tema');
   if (temaSalvo === 'light') {
     document.documentElement.classList.add('light');
-    const icon = dom.toggleTemaBtn.querySelector('i');
+    const icon = dom.toggleTemaBtn?.querySelector('i');
     if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
   }
   const filtroTipo = localStorage.getItem('filtroTipo');
   const filtroCategoria = localStorage.getItem('filtroCategoria');
   const ordenarPor = localStorage.getItem('ordenarPor');
-  if (filtroTipo) dom.filtroTipoSelect.value = filtroTipo;
-  if (filtroCategoria) dom.filtroCategoriaSelect.value = filtroCategoria;
-  if (ordenarPor) dom.ordenarPorSelect.value = ordenarPor;
-  dom.toggleOrdenacaoBtn.innerHTML = ordemAscendente ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+  if (filtroTipo && dom.filtroTipoSelect) dom.filtroTipoSelect.value = filtroTipo;
+  if (filtroCategoria && dom.filtroCategoriaSelect) dom.filtroCategoriaSelect.value = filtroCategoria;
+  if (ordenarPor && dom.ordenarPorSelect) dom.ordenarPorSelect.value = ordenarPor;
+  if (dom.toggleOrdenacaoBtn) {
+    dom.toggleOrdenacaoBtn.innerHTML = ordemAscendente ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+  }
 }
 
 function salvarPreferenciasUI() {
-  localStorage.setItem('filtroTipo', dom.filtroTipoSelect.value);
-  localStorage.setItem('filtroCategoria', dom.filtroCategoriaSelect.value);
-  localStorage.setItem('ordenarPor', dom.ordenarPorSelect.value);
+  if (dom.filtroTipoSelect) localStorage.setItem('filtroTipo', dom.filtroTipoSelect.value);
+  if (dom.filtroCategoriaSelect) localStorage.setItem('filtroCategoria', dom.filtroCategoriaSelect.value);
+  if (dom.ordenarPorSelect) localStorage.setItem('ordenarPor', dom.ordenarPorSelect.value);
   localStorage.setItem('ordemAscendente', JSON.stringify(ordemAscendente));
 }
 
@@ -162,20 +173,20 @@ function handleAddTransaction(e) {
   const data = dom.form.data.value;
 
   if (!descricao || !valor || !data) {
-    dom.exibirMensagem('Por favor, preencha todos os campos.', 'aviso');
+    dom.exibirMensagem?.('Por favor, preencha todos os campos.', 'aviso');
     return;
   }
 
   const novaTransacao = { id: Date.now(), descricao, valor, tipo, categoria, data };
   emit(EVENT_NAMES.TRANSACTION_ADDED, novaTransacao);
   dom.form.reset();
-  dom.exibirMensagem('Transação adicionada!', 'success');
+  dom.exibirMensagem?.('Transação adicionada!', 'success');
 }
 
 function handleEditRequest(event) {
   const id = event.detail;
   const t = finance.getTransacoes()[id];
-  if (t) dom.abrirModalEdicao(t);
+  if (t) dom.abrirModalEdicao?.(t);
 }
 
 function handleEditTransaction(e) {
@@ -184,7 +195,7 @@ function handleEditTransaction(e) {
   const data = dom.editDataInput.value;
 
   if (!dom.editDescricaoInput.value.trim() || !valor || !data) {
-    dom.exibirMensagem('Por favor, preencha todos os campos.', 'aviso');
+    dom.exibirMensagem?.('Por favor, preencha todos os campos.', 'aviso');
     return;
   }
 
@@ -198,29 +209,29 @@ function handleEditTransaction(e) {
   };
 
   emit(EVENT_NAMES.TRANSACTION_UPDATED, transacaoEditada);
-  dom.fecharModalEdicao();
-  dom.formEditar.reset();
-  dom.exibirMensagem('Transação atualizada!', 'success');
+  dom.fecharModalEdicao?.();
+  dom.formEditar?.reset();
+  dom.exibirMensagem?.('Transação atualizada!', 'success');
 }
 
 function handleDeleteRequest(event) {
   const { event: clickEvent, id } = event.detail;
   clickEvent.stopPropagation();
   idParaExcluir = id;
-  dom.prepararParaRemocao(clickEvent, confirmDeleteTransaction);
+  dom.prepararParaRemocao?.(clickEvent, confirmDeleteTransaction);
 }
 
 function confirmDeleteTransaction() {
   if (idParaExcluir != null) {
     emit(EVENT_NAMES.TRANSACTION_DELETED, idParaExcluir);
-    dom.exibirMensagem('Transação excluída!', 'aviso');
+    dom.exibirMensagem?.('Transação excluída!', 'aviso');
   }
   fecharModalConfirmacao();
   idParaExcluir = null;
 }
 
 function fecharModalConfirmacao() {
-  dom.modalConfirmacao.style.display = 'none';
+  if (dom.modalConfirmacao) dom.modalConfirmacao.style.display = 'none';
   idParaExcluir = null;
 }
 
@@ -233,19 +244,22 @@ function handleSetLimit(e) {
     limiteGasto = novoLimite;
     storage.salvarLimiteGasto(limiteGasto);
     updateProgressBar();
-    dom.exibirMensagem('Limite de gastos salvo!', 'success');
+    dom.exibirMensagem?.('Limite de gastos salvo!', 'success');
   } else {
-    dom.exibirMensagem('O limite deve ser um número positivo.', 'aviso');
-    dom.limiteInput.value = limiteGasto;
+    dom.exibirMensagem?.('O limite deve ser um número positivo.', 'aviso');
+    if (dom.limiteInput) dom.limiteInput.value = limiteGasto;
   }
 }
 
 function updateProgressBar() {
+  // Se não for a página de Limite, não faz nada
+  if (!dom.barraProgresso || !dom.gastoAtualSpan || !dom.porcentagemGastoSpan) return;
+
   const { despesas } = finance.calcularSaldo();
   const ratio = limiteGasto > 0 ? (despesas / limiteGasto) : 0;
   const porcentagem = ratio * 100;
 
-  dom.gastoAtualSpan.textContent = dom.formatBRL(despesas);
+  dom.gastoAtualSpan.textContent = dom.formatBRL?.(despesas) ?? despesas.toFixed(2);
   dom.porcentagemGastoSpan.textContent = porcentagem.toFixed(2);
   dom.barraProgresso.style.width = `${Math.min(porcentagem, 100)}%`;
   dom.barraProgresso.setAttribute('aria-valuenow', Math.min(porcentagem, 100).toFixed(0));
@@ -254,11 +268,11 @@ function updateProgressBar() {
   if (limiteGasto > 0) {
     if (ratio >= ALERT_THRESHOLDS.exceed && _alertState.geral !== 'exceed') {
       _alertState.geral = 'exceed';
-      dom.exibirMensagem('ATENÇÃO: Você excedeu o seu limite de gastos!', 'aviso', 5000);
+      dom.exibirMensagem?.('ATENÇÃO: Você excedeu o seu limite de gastos!', 'aviso', 5000);
       navigator.vibrate?.(200);
     } else if (ratio >= ALERT_THRESHOLDS.warn && _alertState.geral !== 'warn' && _alertState.geral !== 'exceed') {
       _alertState.geral = 'warn';
-      dom.exibirMensagem('Atenção: 80% do limite de gastos atingido.', 'info', 4000);
+      dom.exibirMensagem?.('Atenção: 80% do limite de gastos atingido.', 'info', 4000);
       navigator.vibrate?.([60, 40, 60]);
     } else if (ratio < ALERT_THRESHOLDS.warn) {
       _alertState.geral = null;
@@ -272,20 +286,22 @@ function updateProgressBar() {
    Orçamentos por categoria
    ========================= */
 function handleSaveBudget() {
-  const categoria = dom.selectCategoriaOrcamento.value;
-  const limite = parseFloat(dom.inputLimiteCategoria.value);
+  const categoria = dom.selectCategoriaOrcamento?.value;
+  const limite = parseFloat(dom.inputLimiteCategoria?.value);
 
   if (categoria && limite > 0) {
     orcamentosPorCategoria[categoria] = limite;
     storage.salvarOrcamentosPorCategoria(orcamentosPorCategoria);
-    dom.exibirMensagem(`Orçamento de ${dom.formatBRL(limite)} para ${categoria} salvo!`, 'success');
+    dom.exibirMensagem?.(`Orçamento de ${dom.formatBRL?.(limite) ?? limite} para ${categoria} salvo!`, 'success');
     emit(EVENT_NAMES.ORCAMENTOS_UPDATED);
   } else {
-    dom.exibirMensagem('Por favor, selecione uma categoria e insira um valor positivo.', 'aviso');
+    dom.exibirMensagem?.('Por favor, selecione uma categoria e insira um valor positivo.', 'aviso');
   }
 }
 
 function updateBudgetsUI() {
+  if (!dom.listaOrcamentosCategorias) return;
+
   dom.listaOrcamentosCategorias.innerHTML = '';
 
   const despesas = Object.values(finance.getTransacoes()).filter(t => t.tipo === 'despesa');
@@ -304,8 +320,8 @@ function updateBudgetsUI() {
     item.classList.add('orcamento-item');
     item.innerHTML = `
       <div class="orcamento-header">
-        <span><i class="fas ${dom.getIconClass(categoria)}"></i> ${categoria}</span>
-        <span>${dom.formatBRL(gasto)} / ${dom.formatBRL(limite)}</span>
+        <span><i class="fas ${dom.getIconClass?.(categoria) ?? 'fa-tag'}"></i> ${categoria}</span>
+        <span>${dom.formatBRL?.(gasto) ?? gasto.toFixed(2)} / ${dom.formatBRL?.(limite) ?? limite.toFixed(2)}</span>
       </div>
       <div class="orcamento-barra">
         <div class="progresso" style="width: ${Math.min(porcentagem, 100)}%;"></div>
@@ -321,11 +337,11 @@ function updateBudgetsUI() {
     if (limite > 0) {
       if (ratio >= ALERT_THRESHOLDS.exceed && prev !== 'exceed') {
         _alertState.categorias[categoria] = 'exceed';
-        dom.exibirMensagem(`Excedeu o orçamento de ${categoria}.`, 'aviso', 5000);
+        dom.exibirMensagem?.(`Excedeu o orçamento de ${categoria}.`, 'aviso', 5000);
         navigator.vibrate?.(200);
       } else if (ratio >= ALERT_THRESHOLDS.warn && prev !== 'warn' && prev !== 'exceed') {
         _alertState.categorias[categoria] = 'warn';
-        dom.exibirMensagem(`Atingiu 80% do orçamento de ${categoria}.`, 'info', 4000);
+        dom.exibirMensagem?.(`Atingiu 80% do orçamento de ${categoria}.`, 'info', 4000);
         navigator.vibrate?.([60, 40, 60]);
       } else if (ratio < ALERT_THRESHOLDS.warn) {
         _alertState.categorias[categoria] = null;
@@ -339,7 +355,7 @@ function updateBudgetsUI() {
       const categoria = e.currentTarget.dataset.categoria;
       delete orcamentosPorCategoria[categoria];
       storage.salvarOrcamentosPorCategoria(orcamentosPorCategoria);
-      dom.exibirMensagem(`Orçamento de ${categoria} removido.`, 'aviso');
+      dom.exibirMensagem?.(`Orçamento de ${categoria} removido.`, 'aviso');
       emit(EVENT_NAMES.ORCAMENTOS_UPDATED);
     });
   });
@@ -350,7 +366,9 @@ function updateBudgetsUI() {
    ========================= */
 function toggleOrdenacao() {
   ordemAscendente = !ordemAscendente;
-  dom.toggleOrdenacaoBtn.innerHTML = ordemAscendente ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+  if (dom.toggleOrdenacaoBtn) {
+    dom.toggleOrdenacaoBtn.innerHTML = ordemAscendente ? '<i class="fas fa-sort-up"></i>' : '<i class="fas fa-sort-down"></i>';
+  }
   updateUI();
 }
 
@@ -358,28 +376,35 @@ function toggleTema() {
   document.documentElement.classList.toggle('light');
   const temaAtual = document.documentElement.classList.contains('light') ? 'light' : 'dark';
   localStorage.setItem('tema', temaAtual);
-  const icon = dom.toggleTemaBtn.querySelector('i');
-  if (temaAtual === 'light') { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
-  else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+  const icon = dom.toggleTemaBtn?.querySelector('i');
+  if (icon) {
+    if (temaAtual === 'light') { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+    else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+  }
   if (typeof charts.reapplyChartTheme === 'function') charts.reapplyChartTheme();
 }
 
 function updateUI() {
   const transacoesAtuais = finance.getTransacoes();
 
-  dom.renderizarTransacoes(
-    transacoesAtuais,
-    dom.filtroTipoSelect.value,
-    dom.filtroCategoriaSelect.value,
-    dom.ordenarPorSelect.value,
-    ordemAscendente
-  );
+  // Lista de transações só na página de transações
+  if (dom.renderizarTransacoes && dom.ordenarPorSelect && dom.filtroTipoSelect && dom.filtroCategoriaSelect) {
+    dom.renderizarTransacoes(
+      transacoesAtuais,
+      dom.filtroTipoSelect.value,
+      dom.filtroCategoriaSelect.value,
+      dom.ordenarPorSelect.value,
+      ordemAscendente
+    );
+  }
 
-  const { receitas, despesas, saldo } = finance.calcularSaldo();
-  dom.totalReceitasSpan.textContent = dom.formatBRL(receitas);
-  dom.totalDespesasSpan.textContent = dom.formatBRL(despesas);
-  dom.saldoSpan.textContent = dom.formatBRL(saldo);
-  dom.saldoSpan.classList.toggle('negativo', saldo < 0);
+  const saldo = finance.calcularSaldo();
+  if (dom.totalReceitasSpan) dom.totalReceitasSpan.textContent = dom.formatBRL?.(saldo.receitas) ?? saldo.receitas.toFixed(2);
+  if (dom.totalDespesasSpan) dom.totalDespesasSpan.textContent = dom.formatBRL?.(saldo.despesas) ?? saldo.despesas.toFixed(2);
+  if (dom.saldoSpan) {
+    dom.saldoSpan.textContent = dom.formatBRL?.(saldo.saldo) ?? saldo.saldo.toFixed(2);
+    dom.saldoSpan.classList.toggle('negativo', saldo.saldo < 0);
+  }
 
   updateProgressBar();
   updateBudgetsUI();
@@ -402,7 +427,7 @@ function exportarCSV() {
   a.download = `transacoes_${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
-  dom.exibirMensagem('CSV exportado com sucesso!', 'success');
+  dom.exibirMensagem?.('CSV exportado com sucesso!', 'success');
 }
 
 /* =========================
@@ -416,13 +441,14 @@ function getCssVar(name) {
 }
 function chartColors() {
   return {
-    text: getCssVar('--cor-texto'),
+    text: getCssVar('--cor-texto') || '#fff',
     grid: 'rgba(148,163,184,0.15)',
-    primary: getCssVar('--cor-primaria'),
-    success: getCssVar('--cor-sucesso'),
-    danger: getCssVar('--cor-aviso'),
+    primary: getCssVar('--cor-primaria') || '#3B82F6',
+    success: getCssVar('--cor-sucesso') || '#10B981',
+    danger: getCssVar('--cor-aviso') || '#EF4444',
   };
 }
+const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 function rangePreset(preset) {
   const today = new Date();
@@ -443,8 +469,8 @@ function rangePreset(preset) {
 }
 
 function agrupar(chave, agrup) {
-  if (agrup === 'dia') return chave.slice(0, 10); // YYYY-MM-DD
-  return chave.slice(0, 7); // YYYY-MM
+  if (agrup === 'dia') return (chave || '').slice(0, 10); // YYYY-MM-DD
+  return (chave || '').slice(0, 7); // YYYY-MM
 }
 
 function filtrarPorDataETipo(transacoes, inicio, fim, incReceitas, incDespesas) {
@@ -470,6 +496,8 @@ function renderOrReplaceChart(ctx, config, refName) {
 }
 
 function gerarRelatorio() {
+  if (!has('#rel-resumo') && !has('#rel-grafico-linha') && !has('#rel-grafico-pizza')) return;
+
   const inicio = document.getElementById('rel-inicio')?.value;
   const fim = document.getElementById('rel-fim')?.value;
   const incReceitas = document.getElementById('rel-inc-receitas')?.checked ?? true;
@@ -497,9 +525,9 @@ function gerarRelatorio() {
   if (resumoEl) {
     resumoEl.innerHTML = `
       <p><strong>Período:</strong> ${inicio || 'início'} → ${fim || 'hoje'}</p>
-      <p><strong>Receitas:</strong> ${dom.formatBRL(receitas)}</p>
-      <p><strong>Despesas:</strong> ${dom.formatBRL(despesas)}</p>
-      <p><strong>Saldo:</strong> ${dom.formatBRL(saldo)}</p>
+      <p><strong>Receitas:</strong> ${dom.formatBRL?.(receitas) ?? receitas.toFixed(2)}</p>
+      <p><strong>Despesas:</strong> ${dom.formatBRL?.(despesas) ?? despesas.toFixed(2)}</p>
+      <p><strong>Saldo:</strong> ${dom.formatBRL?.(saldo) ?? saldo.toFixed(2)}</p>
       <p><small>${filtradas.length} transações no período</small></p>
     `;
   }
@@ -509,7 +537,7 @@ function gerarRelatorio() {
   if (topEl) {
     const pares = Object.entries(porCategoria).sort((a, b) => b[1] - a[1]).slice(0, 5);
     topEl.innerHTML = pares.length
-      ? pares.map(([cat, val]) => `<li>${cat}: <strong>${dom.formatBRL(val)}</strong></li>`).join('')
+      ? pares.map(([cat, val]) => `<li>${getLabelFor(cat)}: <strong>${dom.formatBRL?.(val) ?? val.toFixed(2)}</strong></li>`).join('')
       : '<li>Nenhuma despesa no período.</li>';
   }
 
@@ -569,27 +597,43 @@ function gerarRelatorio() {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: ct.text } } },
+      plugins: {
+        legend: { labels: { color: ct.text } },
+        tooltip: {
+          intersect: false, mode: 'index',
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${BRL.format(+ctx.raw || 0)}`
+          }
+        }
+      },
       scales: {
         x: { grid: { color: ct.grid }, ticks: { color: ct.text } },
-        y: { grid: { color: ct.grid }, ticks: { color: ct.text }, beginAtZero: true }
+        y: {
+          grid: { color: ct.grid },
+          ticks: {
+            color: ct.text,
+            callback: (v) => BRL.format(v)
+          },
+          beginAtZero: true
+        }
       }
     }
   }, { current: relChartLine, set current(v) { relChartLine = v; }, get current() { return relChartLine; } });
 
-  // Pizza por categoria (somente despesas)
+  // Pizza/Donut por categoria (somente despesas) — padronizado
   const pieCtx = document.getElementById('rel-grafico-pizza')?.getContext('2d');
-  const catLabels = Object.keys(porCategoria);
-  const catData = Object.values(porCategoria);
-  const catColors = catLabels.map((_, i) => {
-    // paleta simples alternando em cima das 3 cores do tema
-    return [ct.danger, ct.primary, ct.success][i % 3];
-  });
+  const entries = Object.entries(porCategoria)
+    .filter(([, v]) => (+v || 0) > 0)
+    .sort((a, b) => b[1] - a[1]);
+
+  const catLabels = entries.map(([c]) => getLabelFor(c));
+  const catData   = entries.map(([, v]) => v);
+  const catColors = entries.map(([c]) => getColorFor(c));
 
   renderOrReplaceChart(pieCtx, {
     type: 'doughnut',
     data: {
-      labels: catLabels.map((c, i) => `${c} (${dom.formatBRL(catData[i])})`),
+      labels: catLabels,
       datasets: [{
         data: catData,
         backgroundColor: catColors,
@@ -599,11 +643,19 @@ function gerarRelatorio() {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'right', labels: { color: ct.text } } }
+      plugins: {
+        legend: { position: 'bottom', labels: { color: ct.text, boxWidth: 12, padding: 12, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${BRL.format(+ctx.raw || 0)}`
+          }
+        }
+      },
+      cutout: '55%'
     }
   }, { current: relChartPie, set current(v) { relChartPie = v; }, get current() { return relChartPie; } });
 
-  dom.exibirMensagem('Relatório gerado.', 'success');
+  dom.exibirMensagem?.('Relatório gerado.', 'success');
 }
 
 function exportarRelatorioCSV() {
@@ -628,7 +680,7 @@ function exportarRelatorioCSV() {
   a.download = `relatorio_${(inicio || 'inicio')}_${(fim || 'hoje')}.csv`;
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
-  dom.exibirMensagem('CSV do relatório exportado!', 'success');
+  dom.exibirMensagem?.('CSV do relatório exportado!', 'success');
 }
 
 /* =========================
@@ -642,8 +694,9 @@ function ymd(y, m, d) {
 }
 function carregarDadosDeExemplo() {
   // Gera um conjunto variado: últimos 6–7 meses, várias categorias e tipos
-  const anoAtual = new Date().getFullYear();
-  const mesAtual = new Date().getMonth() + 1; // 1-12
+  const now = new Date();
+  const anoAtual = now.getFullYear();
+  const mesAtual = now.getMonth() + 1; // 1-12
 
   // Meses relativos (ajusta ano quando cruza janeiro)
   const rel = (offset) => {
@@ -703,8 +756,7 @@ function carregarDadosDeExemplo() {
     emit(EVENT_NAMES.TRANSACTION_ADDED, { ...t, id: Date.now() + Math.floor(Math.random() * 1e6) });
   });
 
-  // Atualiza UI e relatórios
-  dom.exibirMensagem('Dados de exemplo carregados!', 'success');
+  dom.exibirMensagem?.('Dados de exemplo carregados!', 'success');
   gerarRelatorio();
 }
 

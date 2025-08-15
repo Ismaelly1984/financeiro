@@ -1,37 +1,37 @@
+// charts.js (completo, robusto e padronizado)
 import { on } from './eventEmitter.js';
-import { EVENT_NAMES } from './config.js';
+import { EVENT_NAMES, getColorFor, getLabelFor } from './config.js';
 import { getTransacoes } from './finance.js';
 
 export let graficoPizza = null;
 export let graficoLinha = null;
+let _inited = false;
 
 /* =========================
-   Bridge de tema (CSS → Chart.js)
+   Tema (CSS → Chart.js)
    ========================= */
 function cssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 function chartTheme() {
   return {
-    text: cssVar('--cor-texto'),
+    text: cssVar('--cor-texto') || '#e5e7eb',
     grid: 'rgba(148, 163, 184, 0.15)',
-    primary: cssVar('--cor-primaria'),
-    success: cssVar('--cor-sucesso'),
-    danger: cssVar('--cor-aviso'),
-    bgCard: cssVar('--cor-secundaria')
+    primary: cssVar('--cor-primaria') || '#3B82F6',
+    success: cssVar('--cor-sucesso') || '#10B981',
+    danger: cssVar('--cor-aviso') || '#EF4444',
+    bgCard: cssVar('--cor-secundaria') || 'transparent'
   };
 }
 
 function applyChartDefaults() {
-  const t = chartTheme();
   if (typeof Chart === 'undefined') return;
+  const t = chartTheme();
 
-  // fontes / cores globais
   Chart.defaults.font.family =
     "'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'";
   Chart.defaults.color = t.text;
 
-  // legendas e tooltip
   Chart.defaults.plugins.legend = Chart.defaults.plugins.legend || {};
   Chart.defaults.plugins.legend.labels = Chart.defaults.plugins.legend.labels || {};
   Chart.defaults.plugins.legend.labels.color = t.text;
@@ -40,15 +40,13 @@ function applyChartDefaults() {
   Chart.defaults.plugins.tooltip.titleColor = t.text;
   Chart.defaults.plugins.tooltip.bodyColor = t.text;
 
-  // v4: configurar eixos diretamente em x/y
   Chart.defaults.scales = Chart.defaults.scales || {};
   Chart.defaults.scales.x = Chart.defaults.scales.x || {};
   Chart.defaults.scales.y = Chart.defaults.scales.y || {};
-
   Chart.defaults.scales.x.ticks = Chart.defaults.scales.x.ticks || {};
   Chart.defaults.scales.y.ticks = Chart.defaults.scales.y.ticks || {};
-  Chart.defaults.scales.x.grid  = Chart.defaults.scales.x.grid  || {};
-  Chart.defaults.scales.y.grid  = Chart.defaults.scales.y.grid  || {};
+  Chart.defaults.scales.x.grid = Chart.defaults.scales.x.grid || {};
+  Chart.defaults.scales.y.grid = Chart.defaults.scales.y.grid || {};
 
   Chart.defaults.scales.x.ticks.color = t.text;
   Chart.defaults.scales.y.ticks.color = t.text;
@@ -56,23 +54,20 @@ function applyChartDefaults() {
   Chart.defaults.scales.y.grid.color  = t.grid;
 }
 
-// Exporta para reaplicar imediatamente quando o tema mudar
+// público (quando alterna o tema)
 export function reapplyChartTheme() {
   applyChartDefaults();
-  atualizarGraficos(); // recria para aplicar as novas cores
+  atualizarGraficos();
 }
-
 applyChartDefaults();
-
-// Reaplica defaults quando a aba volta (garante consistência)
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) applyChartDefaults();
-});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) applyChartDefaults(); });
 
 /* =========================
    Inicialização
    ========================= */
 export function init() {
+  if (_inited) return;
+  _inited = true;
   on(EVENT_NAMES.DATA_UPDATED, atualizarGraficos);
 }
 
@@ -82,7 +77,35 @@ function atualizarGraficos() {
 }
 
 /* =========================
-   Pizza: Gastos por categoria
+   Utils
+   ========================= */
+const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+const brl = (n) => BRL.format(Number.isFinite(+n) ? +n : 0);
+function destroyIf(chartInstance) { if (chartInstance) chartInstance.destroy(); }
+function sum(arr) { return (arr || []).reduce((a, b) => a + (+b || 0), 0); }
+
+function drawNoData(canvas, msg = 'Sem dados para exibir') {
+  if (!canvas) return;
+  const t = chartTheme();
+  const ctx = canvas.getContext('2d');
+  const { width, height } = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  const w = Math.max(1, Math.floor(width * dpr));
+  const h = Math.max(1, Math.floor(height * dpr));
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  ctx.save(); ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, width, height);
+  if (t.bgCard !== 'transparent') { ctx.fillStyle = t.bgCard; ctx.fillRect(0, 0, width, height); }
+  ctx.fillStyle = t.text || '#999';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = '500 14px Inter, system-ui, sans-serif';
+  ctx.fillText(msg, width / 2, height / 2);
+  ctx.restore();
+}
+
+/* =========================
+   Donut: Despesas por categoria
    ========================= */
 function atualizarGraficoPizza() {
   const canvas = document.getElementById('graficoPizza');
@@ -90,36 +113,35 @@ function atualizarGraficoPizza() {
 
   const transacoesAtuais = getTransacoes();
   const despesas = Object.values(transacoesAtuais).filter(t => t.tipo === 'despesa');
+
   const gastosPorCategoria = despesas.reduce((acc, t) => {
-    acc[t.categoria] = (acc[t.categoria] || 0) + parseFloat(t.valor);
+    const cat = t.categoria || 'outros';
+    const v = parseFloat(t.valor || 0);
+    acc[cat] = (acc[cat] || 0) + v;
     return acc;
   }, {});
 
-  const labels = Object.keys(gastosPorCategoria);
-  const data = Object.values(gastosPorCategoria);
+  const entries = Object.entries(gastosPorCategoria)
+    .filter(([, v]) => (+v || 0) > 0)
+    .sort((a, b) => b[1] - a[1]);
+
+  if (entries.length === 0) { destroyIf(graficoPizza); graficoPizza = null; drawNoData(canvas, 'Sem despesas por categoria'); return; }
+
+  const categorias      = entries.map(([cat]) => cat);
+  const valores         = entries.map(([, v]) => v);
+  const labelsAmigaveis = categorias.map(getLabelFor);
+  const cores           = categorias.map(getColorFor);
 
   const t = chartTheme();
-  const cores = labels.map(cat => {
-    const mapa = {
-      alimentacao: t.primary,
-      transporte: t.success,
-      lazer: '#F59E0B',
-      saude: '#06B6D4',
-      educacao: '#8B5CF6',
-      outros: '#9CA3AF'
-    };
-    return mapa[cat] || t.primary;
-  });
-
   const ctx = canvas.getContext('2d');
-  if (graficoPizza) graficoPizza.destroy();
+  destroyIf(graficoPizza);
 
   graficoPizza = new Chart(ctx, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
-      labels: labels.map(cat => `${cat} (R$ ${gastosPorCategoria[cat].toFixed(2)})`),
+      labels: labelsAmigaveis,
       datasets: [{
-        data,
+        data: valores,
         backgroundColor: cores,
         hoverBackgroundColor: cores.map(c => `${c}CC`),
         borderWidth: 1
@@ -128,13 +150,31 @@ function atualizarGraficoPizza() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'right' } }
+      interaction: { mode: 'index', intersect: false },
+      layout: { padding: { top: 8, bottom: 8, left: 8, right: 8 } },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: t.text, boxWidth: 12, padding: 12, font: { size: 11 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = +ctx.raw || 0;
+              const tot = (ctx.dataset.data || []).reduce((a, b) => a + (+b || 0), 0);
+              const pct = tot ? (v / tot * 100) : 0;
+              return `${ctx.label}: ${brl(v)} (${pct.toFixed(1)}%)`;
+            }
+          }
+        }
+      },
+      cutout: '55%' // **dentro** de options (corrigido)
     }
   });
 }
 
 /* =========================
-   Linha: Gastos mensais
+   Linha: Gastos mensais (somente despesas)
    ========================= */
 function atualizarGraficoLinha() {
   const canvas = document.getElementById('graficoLinha');
@@ -142,18 +182,28 @@ function atualizarGraficoLinha() {
 
   const transacoesAtuais = getTransacoes();
   const despesas = Object.values(transacoesAtuais).filter(t => t.tipo === 'despesa');
+
   const gastosPorMes = despesas.reduce((acc, t) => {
-    const mes = t.data.substring(0, 7);
-    acc[mes] = (acc[mes] || 0) + parseFloat(t.valor);
+    const mes = (t.data || '').substring(0, 7); // YYYY-MM
+    if (!mes) return acc;
+    acc[mes] = (acc[mes] || 0) + parseFloat(t.valor || 0);
     return acc;
   }, {});
 
-  const labels = Object.keys(gastosPorMes).sort();
-  const data = labels.map(mes => gastosPorMes[mes]);
+  const labels  = Object.keys(gastosPorMes).sort();
+  const valores = labels.map(m => gastosPorMes[m]);
+
+  if (labels.length === 0 || sum(valores) === 0) { destroyIf(graficoLinha); graficoLinha = null; drawNoData(canvas, 'Sem gastos mensais'); return; }
 
   const t = chartTheme();
   const ctx = canvas.getContext('2d');
-  if (graficoLinha) graficoLinha.destroy();
+  destroyIf(graficoLinha);
+
+  // Gradiente para a área
+  const rect = canvas.getBoundingClientRect();
+  const grad = ctx.createLinearGradient(0, 0, 0, rect.height || 300);
+  grad.addColorStop(0, (t.danger || '#EF4444') + '33');
+  grad.addColorStop(1, (t.danger || '#EF4444') + '00');
 
   graficoLinha = new Chart(ctx, {
     type: 'line',
@@ -161,9 +211,9 @@ function atualizarGraficoLinha() {
       labels,
       datasets: [{
         label: 'Gastos Mensais',
-        data,
+        data: valores,
         borderColor: t.danger,
-        backgroundColor: `${t.danger}33`,
+        backgroundColor: grad,
         fill: true,
         tension: 0.25,
         pointRadius: 3,
@@ -173,13 +223,21 @@ function atualizarGraficoLinha() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      // Em v4, as opções de cor já foram definidas em defaults; aqui só garantimos beginAtZero
+      interaction: { mode: 'index', intersect: false },
       scales: {
-        y: { beginAtZero: true }
+        y: { beginAtZero: true, grid: { color: t.grid }, ticks: { color: t.text } },
+        x: { grid: { color: t.grid }, ticks: { color: t.text } }
       },
       plugins: {
-        legend: { labels: { usePointStyle: false } },
-        tooltip: { intersect: false, mode: 'index' }
+        legend: {
+          position: 'bottom',
+          labels: { color: t.text, boxWidth: 12, padding: 12, font: { size: 11 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${brl(ctx.parsed.y)}`
+          }
+        }
       }
     }
   });
