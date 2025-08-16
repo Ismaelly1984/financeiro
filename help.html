@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -9,32 +10,293 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="./favicon.png" />
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- FAQ estruturado para SEO -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {"@type":"Question","name":"Meus dados ficam salvos onde?","acceptedAnswer":{"@type":"Answer","text":"Todos os dados ficam no seu navegador (Local Storage). Você pode exportar um CSV a qualquer momento em Transações ou Relatórios."}},
+      {"@type":"Question","name":"Posso usar offline?","acceptedAnswer":{"@type":"Answer","text":"Sim. O app instala um Service Worker. Após aberto uma vez, você consegue usar sem internet (adicionar, editar e excluir transações)."}},
+      {"@type":"Question","name":"Como trocar o tema claro/escuro?","acceptedAnswer":{"@type":"Answer","text":"Clique no ícone de lua/sol no topo. A preferência é salva automaticamente."}},
+      {"@type":"Question","name":"Como restauro a ordem e filtros?","acceptedAnswer":{"@type":"Answer","text":"Na página de Transações, ajuste os seletores e a ordem. Essas preferências ficam salvas para as próximas visitas."}}
+    ]
+  }
+  </script>
+
   <style>
     /* Complementos leves só para a página de ajuda */
-    .help-intro{max-width:900px;margin:1rem auto 2rem;color:var(--cor-texto-secundario)}
-    .toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin:1rem 0 2rem}
-    .toc a{display:block;background:var(--cor-secundaria);border:1px solid var(--cor-borda);border-radius:10px;
-      padding:.75rem 1rem;text-decoration:none;color:var(--cor-texto);box-shadow:var(--sombra-escura)}
-    .toc a:hover{border-color:var(--cor-primaria)}
-    .help-section{background:var(--cor-secundaria);border:1px solid var(--cor-borda);border-radius:12px;
-      box-shadow:var(--sombra-escura);padding:1.25rem;margin-bottom:1rem}
-    .help-section h3{margin-bottom:.5rem;color:var(--cor-primaria)}
-    .kbd{display:inline-block;border:1px solid var(--cor-borda);border-bottom-width:2px;border-radius:6px;padding:.1rem .4rem;
-      font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:var(--cor-fundo)}
-    details.faq{border:1px solid var(--cor-borda);border-radius:10px;padding:.75rem 1rem;background:var(--cor-secundaria)}
-    details.faq+details.faq{margin-top:.6rem}
-    details.faq summary{cursor:pointer;font-weight:600;color:var(--cor-texto)}
-    .support-links a{display:inline-flex;align-items:center;gap:.5rem}
-    .badge{display:inline-block;background:color-mix(in srgb, var(--cor-primaria) 20%, transparent);
-      border:1px solid var(--cor-borda);padding:.1rem .5rem;border-radius:999px;margin-left:.4rem;font-size:.85rem}
-    .back-link{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--cor-texto)}
-    .back-link:hover{color:var(--cor-primaria)}
+    :root {
+      scroll-behavior: smooth;
+    }
+
+    .help-hero {
+      background: var(--cor-secundaria);
+      border: 1px solid var(--cor-borda);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      box-shadow: var(--sombra-escura);
+    }
+
+    .help-hero i {
+      font-size: 1.75rem;
+      color: var(--cor-primaria);
+      margin-top: .15rem
+    }
+
+    .help-intro {
+      max-width: 900px;
+      margin: 1rem auto 2rem;
+      color: var(--cor-texto-secundario)
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: .75rem;
+      margin: 1rem 0 2rem
+    }
+
+    .toc a {
+      display: block;
+      background: var(--cor-secundaria);
+      border: 1px solid var(--cor-borda);
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      text-decoration: none;
+      color: var(--cor-texto);
+      box-shadow: var(--sombra-escura)
+    }
+
+    .toc a:hover {
+      border-color: var(--cor-primaria)
+    }
+
+    .help-section {
+      background: var(--cor-secundaria);
+      border: 1px solid var(--cor-borda);
+      border-radius: 12px;
+      box-shadow: var(--sombra-escura);
+      padding: 1.25rem;
+      margin-bottom: 1rem
+    }
+
+    .help-section h3 {
+      margin-bottom: .5rem;
+      color: var(--cor-primaria)
+    }
+
+    .kbd {
+      display: inline-block;
+      border: 1px solid var(--cor-borda);
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      padding: .1rem .4rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      background: var(--cor-fundo)
+    }
+
+    details.faq {
+      border: 1px solid var(--cor-borda);
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      background: var(--cor-secundaria)
+    }
+
+    details.faq+details.faq {
+      margin-top: .6rem
+    }
+
+    details.faq summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--cor-texto)
+    }
+
+    .support-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem
+    }
+
+    .badge {
+      display: inline-block;
+      background: color-mix(in srgb, var(--cor-primaria) 20%, transparent);
+      border: 1px solid var(--cor-borda);
+      padding: .1rem .5rem;
+      border-radius: 999px;
+      margin-left: .4rem;
+      font-size: .85rem
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      text-decoration: none;
+      color: var(--cor-texto)
+    }
+
+    .back-link:hover {
+      color: var(--cor-primaria)
+    }
+
+    .list-check {
+      list-style: none;
+      padding-left: 0
+    }
+
+    .list-check li {
+      display: flex;
+      gap: .6rem;
+      align-items: flex-start
+    }
+
+    .list-check li i {
+      color: var(--cor-sucesso);
+      margin-top: .2rem
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--cor-borda);
+      border-radius: 10px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th,
+    td {
+      padding: .7rem;
+      border-bottom: 1px solid var(--cor-borda);
+      text-align: left
+    }
+
+    th {
+      color: var(--cor-texto);
+      background: color-mix(in srgb, var(--cor-primaria) 12%, transparent)
+    }
+
+    .muted {
+      color: var(--cor-texto-secundario);
+      font-size: .95rem
+    }
+
+    .tip {
+      font-size: .95rem;
+      color: var(--cor-texto-secundario)
+    }
+
+    @media (min-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    /* ===== Pesquisa ===== */
+    .search-wrap {
+      display: grid;
+      gap: .75rem
+    }
+
+    .search-input {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .65rem .8rem;
+      border: 1px solid var(--cor-borda);
+      border-radius: 10px;
+      background: var(--cor-fundo)
+    }
+
+    .search-input input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--cor-texto);
+      font-size: 1rem
+    }
+
+    .search-input i {
+      color: var(--cor-texto-secundario)
+    }
+
+    .search-status {
+      min-height: 1.2rem;
+      color: var(--cor-texto-secundario);
+      font-size: .95rem
+    }
+
+    .help-section.is-hidden {
+      display: none
+    }
+
+    /* Destaque do termo encontrado */
+    mark.search-hit {
+      background: color-mix(in srgb, var(--cor-primaria) 28%, transparent);
+      color: var(--cor-texto);
+      padding: .05rem .2rem;
+      border-radius: .25rem;
+    }
+
+    /* TOC: mostra contagem por item quando filtrado */
+    .toc a .count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.2rem;
+      height: 1.2rem;
+      font-size: .8rem;
+      margin-left: .35rem;
+      background: color-mix(in srgb, var(--cor-primaria) 25%, transparent);
+      border: 1px solid var(--cor-borda);
+      border-radius: 999px;
+      padding: 0 .3rem;
+      color: var(--cor-texto);
+    }
+
+    .search-input {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .65rem .8rem;
+      border: 1px solid var(--cor-borda);
+      border-radius: 10px;
+      background: var(--cor-fundo)
+    }
+
+    .search-input input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--cor-texto);
+      font-size: 1rem
+    }
+
+    .search-input i {
+      color: var(--cor-texto-secundario)
+    }
   </style>
 </head>
+
 <body>
-  <!-- Navbar enxuta (sem Limite/Orçamento) -->
+  <!-- Navbar enxuta (sem Limite/Orçamento na nav; eles vivem no Resumo) -->
   <nav class="navbar" role="navigation" aria-label="Navegação principal">
     <div class="navbar-container">
       <a href="index.html" class="back-link" aria-label="Voltar para o app">
@@ -49,12 +311,35 @@
 
   <main class="container" id="topo">
     <header class="help-intro">
-      <p>
-        Bem-vindo à ajuda do <strong>MeuFinanceiro</strong>. Aqui você encontra respostas rápidas,
-        atalhos e orientações para aproveitar tudo do app. Se ainda ficar com dúvida,
-        <a href="#suporte">fale com o suporte</a>.
-      </p>
+      <div class="help-hero" role="doc-introduction" aria-describedby="help-intro-text">
+        <i class="fas fa-circle-info" aria-hidden="true"></i>
+        <div id="help-intro-text">
+          <p>
+            Bem-vindo à ajuda do <strong>MeuFinanceiro</strong>. Aqui você encontra respostas rápidas,
+            atalhos e orientações para aproveitar todo o app. Precisa de mais suporte?
+            <a href="#suporte">Fale com a gente</a>.
+          </p>
+          <p class="muted">Versão do app: <span class="badge">1.0.0</span></p>
+        </div>
+      </div>
     </header>
+    <!-- Pesquisa (filtro instantâneo + botão) -->
+    <section class="help-section" aria-labelledby="busca-title">
+      <h3 id="busca-title">Pesquisar na Ajuda</h3>
+      <form id="help-search-form" class="search-wrap" role="search" aria-label="Pesquisar nas seções de ajuda">
+        <label for="help-search" class="sr-only">Pesquisar</label>
+        <div class="search-input">
+          <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+          <input id="help-search" type="search" inputmode="search"
+            placeholder="Digite e pressione Enter, ou clique em Pesquisar" autocomplete="off" />
+          <button type="submit" class="btn-acoes" aria-label="Executar pesquisa">
+            <i class="fas fa-search"></i> Pesquisar
+          </button>
+        </div>
+        <div id="help-search-status" class="search-status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
 
     <!-- Sumário -->
     <nav aria-label="Sumário">
@@ -73,38 +358,239 @@
       </div>
     </nav>
 
-    <!-- Seções (mantenha/complete as demais conforme sua versão) -->
-    <section id="inicio" class="help-section">
-      <h3>Início rápido</h3>
-      <ol>
-        <li>Abra <em>Transações</em> e clique em <strong>Adicionar</strong>.</li>
-        <li>Informe <em>Descrição</em>, <em>Valor</em>, <em>Tipo</em>, <em>Categoria</em> e <em>Data</em>.</li>
-        <li>Defina seu <em>Limite</em> no <strong>Resumo</strong>.</li>
-        <li>Use <em>Orçamento por Categoria</em> para metas específicas (também no <strong>Resumo</strong>).</li>
-        <li>Acompanhe tudo em <em>Gráficos</em> e no <em>Resumo</em>.</li>
+    <!-- Início rápido -->
+    <section id="inicio" class="help-section" aria-labelledby="inicio-title">
+      <h3 id="inicio-title">Início rápido</h3>
+      <ol class="list-check">
+        <li><i class="fas fa-check"></i><span>Abra <strong>Transações</strong> e clique em
+            <strong>Adicionar</strong>.</span></li>
+        <li><i class="fas fa-check"></i><span>Informe <em>Descrição</em>, <em>Valor</em>, <em>Tipo</em>,
+            <em>Categoria</em> e <em>Data</em>.</span></li>
+        <li><i class="fas fa-check"></i><span>Defina seu <strong>Limite</strong> no <strong>Resumo</strong>.</span></li>
+        <li><i class="fas fa-check"></i><span>Crie <strong>Orçamentos por Categoria</strong> no
+            <strong>Resumo</strong>.</span></li>
+        <li><i class="fas fa-check"></i><span>Acompanhe os <strong>Gráficos</strong> para ver evolução e
+            distribuição.</span></li>
       </ol>
+      <p class="tip"><i class="fas fa-lightbulb"></i> Dica: use o ícone de lua/sol para alternar o tema. Sua preferência
+        fica salva.</p>
     </section>
 
-    <!-- ... copie aqui suas outras seções: Transações, Filtros, Orçamentos, Gráficos, Exportação, Instalação, Atalhos, FAQ, Privacidade ... -->
-
-    <section id="suporte" class="help-section">
-      <h3>Suporte</h3>
-      <div class="support-links">
-        <p><a href="https://wa.me/5599999999999" rel="noopener" target="_blank"><i class="fab fa-whatsapp"></i> Falar no WhatsApp</a></p>
-        <p><a href="mailto:suporte@meufinanceiro.app?subject=Ajuda%20-%20MeuFinanceiro"><i class="fas fa-envelope"></i> suporte@meufinanceiro.app</a></p>
+    <!-- Transações -->
+    <section id="transacoes" class="help-section" aria-labelledby="transacoes-title">
+      <h3 id="transacoes-title">Transações</h3>
+      <div class="grid-2">
+        <div>
+          <h4>Adicionar</h4>
+          <ul class="list-check">
+            <li><i class="fas fa-check"></i><span>Preencha os campos e clique em <strong>Adicionar</strong>.</span></li>
+            <li><i class="fas fa-check"></i><span>Use categorias consistentes para relatórios mais fiéis.</span></li>
+          </ul>
+          <h4 style="margin-top:.75rem">Editar/Excluir</h4>
+          <ul class="list-check">
+            <li><i class="fas fa-check"></i><span>Ícone <i class="fas fa-edit"></i> para editar; <i
+                  class="fas fa-trash-alt"></i> para excluir.</span></li>
+            <li><i class="fas fa-check"></i><span>Confirme a exclusão no modal de confirmação.</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Boas práticas</h4>
+          <ul class="list-check">
+            <li><i class="fas fa-check"></i><span>Registre despesas recorrentes (ex.: internet, aluguel) no mesmo dia do
+                mês.</span></li>
+            <li><i class="fas fa-check"></i><span>Identifique receitas extraordinárias (ex.: bônus, freelance) como
+                “Outros”.</span></li>
+            <li><i class="fas fa-check"></i><span>Evite <em>descrições vagas</em> – “Mercado Semana 2” é melhor que só
+                “Mercado”.</span></li>
+          </ul>
+        </div>
       </div>
-      <p><a href="#topo" class="back-link"><i class="fas fa-arrow-up"></i> Voltar ao topo</a></p>
+    </section>
+
+    <!-- Filtros & Ordenação -->
+    <section id="filtros" class="help-section" aria-labelledby="filtros-title">
+      <h3 id="filtros-title">Filtros & Ordenação</h3>
+      <p>Na página de <strong>Transações</strong> você pode filtrar por tipo (Receita/Despesa) e categoria, além de
+        ordenar por <em>Data</em>, <em>Valor</em> ou <em>Descrição</em> (asc/desc). Essas preferências ficam salvas.</p>
+      <p class="tip"><i class="fas fa-lightbulb"></i> Dica: combine filtros e exporte o CSV já filtrado.</p>
+    </section>
+
+    <!-- Orçamentos -->
+    <section id="orcamentos" class="help-section" aria-labelledby="orcamentos-title">
+      <h3 id="orcamentos-title">Orçamentos por categoria</h3>
+      <div class="grid-2">
+        <div>
+          <p>Defina limites por categoria no <strong>Resumo</strong>. O app exibe barra de progresso e alerta em 80% e
+            100% do limite.</p>
+          <ul class="list-check">
+            <li><i class="fas fa-check"></i><span>Selecione a categoria e o valor limite.</span></li>
+            <li><i class="fas fa-check"></i><span>Remova um orçamento quando não for mais necessário.</span></li>
+          </ul>
+        </div>
+        <div>
+          <p><strong>Limite geral:</strong> também no Resumo, mostra a soma de despesas vs. limite mensal e alerta ao
+            ultrapassar.</p>
+          <p class="tip"><i class="fas fa-bell"></i> Notificações sutis: vibração no celular e mensagens no topo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gráficos -->
+    <section id="graficos" class="help-section" aria-labelledby="graficos-title">
+      <h3 id="graficos-title">Gráficos</h3>
+      <ul class="list-check">
+        <li><i class="fas fa-check"></i><span><strong>Pizza</strong>: distribuição das despesas por categoria (cores
+            padronizadas do app).</span></li>
+        <li><i class="fas fa-check"></i><span><strong>Linha</strong>: evolução de gastos por mês.</span></li>
+      </ul>
+      <p class="tip"><i class="fas fa-circle-half-stroke"></i> Tema claro/escuro altera automaticamente as cores dos
+        gráficos.</p>
+    </section>
+
+    <!-- Exportar / Importar -->
+    <section id="exportacao" class="help-section" aria-labelledby="exportacao-title">
+      <h3 id="exportacao-title">Exportar / Importar</h3>
+      <div class="grid-2">
+        <div>
+          <h4>Exportar CSV</h4>
+          <ul class="list-check">
+            <li><i class="fas fa-check"></i><span>Em <strong>Transações</strong>, clique em <em>Exportar CSV</em> para
+                baixar tudo.</span></li>
+            <li><i class="fas fa-check"></i><span>Em <strong>Relatórios</strong>, exporte somente o período/critério
+                filtrado.</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Importar (opcional)</h4>
+          <p>Se você quiser, pode implementar uma importação CSV depois. Recomendado usar cabeçalhos:
+            <code>Descrição;Valor;Tipo;Categoria;Data</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instalação & Offline -->
+    <section id="instalacao" class="help-section" aria-labelledby="instalacao-title">
+      <h3 id="instalacao-title">Instalação & Offline</h3>
+      <ul class="list-check">
+        <li><i class="fas fa-check"></i><span><strong>PWA</strong>: adicione à tela inicial (Android/Chrome) ou use
+            “Instalar app”.</span></li>
+        <li><i class="fas fa-check"></i><span>Depois de aberto uma vez, funciona offline (Service Worker
+            habilitado).</span></li>
+      </ul>
+      <p class="tip"><i class="fas fa-wifi"></i> Quando voltar a ficar online, nada muda: seus dados já estão no
+        dispositivo.</p>
+    </section>
+
+    <!-- Atalhos de teclado -->
+    <section id="atalhos" class="help-section" aria-labelledby="atalhos-title">
+      <h3 id="atalhos-title">Atalhos</h3>
+      <div class="table-wrap" role="region" aria-label="Tabela de atalhos">
+        <table>
+          <thead>
+            <tr>
+              <th>Ação</th>
+              <th>Atalho</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Abrir Adicionar Transação</td>
+              <td><span class="kbd">A</span></td>
+            </tr>
+            <tr>
+              <td>Salvar (no modal de edição)</td>
+              <td><span class="kbd">Enter</span></td>
+            </tr>
+            <tr>
+              <td>Excluir transação selecionada</td>
+              <td><span class="kbd">Delete</span> / <span class="kbd">Backspace</span></td>
+            </tr>
+            <tr>
+              <td>Alternar tema</td>
+              <td><span class="kbd">T</span></td>
+            </tr>
+            <tr>
+              <td>Ordenação asc/desc</td>
+              <td><span class="kbd">O</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">Obs.: alguns atalhos dependem do foco no componente (lista ou modal).</p>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="help-section" aria-labelledby="faq-title">
+      <h3 id="faq-title">FAQ</h3>
+      <details class="faq">
+        <summary>Meus dados ficam salvos onde?</summary>
+        <p>Localmente, no seu navegador (Local Storage). Nada é enviado para servidores. Use exportação CSV como backup.
+        </p>
+      </details>
+      <details class="faq">
+        <summary>Posso usar offline?</summary>
+        <p>Sim. O app é um PWA com Service Worker. Depois da primeira visita, ele funciona sem internet.</p>
+      </details>
+      <details class="faq">
+        <summary>Como trocar o tema?</summary>
+        <p>No topo, clique no ícone de lua/sol. O app lembra a sua preferência.</p>
+      </details>
+      <details class="faq">
+        <summary>Os gráficos respeitam o tema?</summary>
+        <p>Sim, as cores dos gráficos se ajustam automaticamente ao tema claro/escuro.</p>
+      </details>
+    </section>
+
+    <!-- Privacidade -->
+    <section id="privacidade" class="help-section" aria-labelledby="privacidade-title">
+      <h3 id="privacidade-title">Privacidade</h3>
+      <p>O <strong>MeuFinanceiro</strong> foi projetado com <em>privacidade por padrão</em>:</p>
+      <ul class="list-check">
+        <li><i class="fas fa-check"></i><span>Dados somente no dispositivo (Local Storage).</span></li>
+        <li><i class="fas fa-check"></i><span>Sem rastreamento/analytics por padrão.</span></li>
+        <li><i class="fas fa-check"></i><span>Exportação e remoção sob seu controle.</span></li>
+      </ul>
+      <p class="tip">Quer limpar tudo? Limpe os dados do site no seu navegador (Configurações &rarr; Privacidade &rarr;
+        Dados de sites).</p>
+    </section>
+
+    <!-- Suporte -->
+    <section id="suporte" class="help-section" aria-labelledby="suporte-title">
+      <h3 id="suporte-title">Suporte</h3>
+      <div class="grid-2">
+        <div>
+          <p>Fale com a gente:</p>
+          <div class="support-links">
+            <p><a href="https://wa.me/5599999999999" rel="noopener" target="_blank"><i class="fab fa-whatsapp"></i>
+                WhatsApp</a></p>
+            <p><a href="mailto:suporte@meufinanceiro.app?subject=Ajuda%20-%20MeuFinanceiro"><i
+                  class="fas fa-envelope"></i> suporte@meufinanceiro.app</a></p>
+          </div>
+        </div>
+        <div>
+          <p><strong>Diagnóstico rápido</strong></p>
+          <ul class="list-check">
+            <li><i class="fas fa-check"></i><span>Atualize a página e tente novamente.</span></li>
+            <li><i class="fas fa-check"></i><span>Verifique se o navegador não está em modo privado.</span></li>
+            <li><i class="fas fa-check"></i><span>Confirme permissões de armazenamento no navegador.</span></li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:1rem"><a href="#topo" class="back-link"><i class="fas fa-arrow-up"></i> Voltar ao topo</a>
+      </p>
     </section>
   </main>
 
-  <!-- Rodapé -->
-  <footer class="footer">
+  <!-- Rodapé consistente com o app -->
+  <footer class="footer" role="contentinfo">
     <div class="footer-container">
       <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
       <div class="footer-links">
         <a href="index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
         <a href="transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
         <a href="graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
+        <!-- Links diretos para seções do Resumo -->
         <a href="index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i class="fas fa-bullseye"></i></a>
         <a href="index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i
             class="fas fa-money-check-alt"></i></a>
@@ -112,7 +598,7 @@
     </div>
   </footer>
 
-  <!-- Tema (isolado, igual app) -->
+  <!-- Script de tema (igual ao app, isolado) -->
   <script>
     (function setupTema() {
       const btn = document.getElementById('toggle-tema');
@@ -142,6 +628,126 @@
         }
       });
     })();
+
+
+    (function helpSearch() {
+      const form = document.getElementById('help-search-form');
+      const input = document.getElementById('help-search');
+      const status = document.getElementById('help-search-status');
+
+      if (!input || !status) return;
+
+      // todas as seções de ajuda (exceto a própria seção de busca)
+      const sections = Array.from(document.querySelectorAll('.help-section'))
+        .filter(s => !s.contains(input));
+
+      const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+
+      function clearMarks(node) {
+        node.querySelectorAll('mark.search-hit').forEach(m => {
+          m.replaceWith(document.createTextNode(m.textContent));
+        });
+      }
+      function highlight(node, term) {
+        if (!term) return;
+        const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, {
+          acceptNode: (n) => n.nodeValue.trim().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+        });
+        const texts = [];
+        while (walker.nextNode()) texts.push(walker.currentNode);
+        texts.forEach(txt => {
+          const parent = txt.parentNode;
+          if (!parent) return;
+          const value = txt.nodeValue;
+          let last = 0;
+          const frag = document.createDocumentFragment();
+          value.replace(re, (match, idx) => {
+            if (idx > last) frag.appendChild(document.createTextNode(value.slice(last, idx)));
+            const mk = document.createElement('mark');
+            mk.className = 'search-hit';
+            mk.textContent = match;
+            frag.appendChild(mk);
+            last = idx + match.length;
+          });
+          if (last < value.length) frag.appendChild(document.createTextNode(value.slice(last)));
+          if (last > 0) parent.replaceChild(frag, txt);
+        });
+      }
+
+      function updateTOCCounts(visibleIds, query) {
+        tocLinks.forEach(a => {
+          a.querySelector('.count-badge')?.remove();
+          if (!query) return;
+          const href = a.getAttribute('href') || '';
+          const id = href.startsWith('#') ? href.slice(1) : '';
+          if (!id) return;
+          if (visibleIds.has(id)) {
+            const badge = document.createElement('span');
+            badge.className = 'count-badge';
+            badge.textContent = '1';
+            a.appendChild(badge);
+          }
+        });
+      }
+
+      function doFilter(q) {
+        const term = (q || '').trim().toLowerCase();
+        let visible = 0;
+        const visibleIds = new Set();
+
+        sections.forEach(sec => {
+          clearMarks(sec);
+          if (!term) {
+            sec.classList.remove('is-hidden');
+            visible++;
+            if (sec.id) visibleIds.add(sec.id);
+            return;
+          }
+          const text = sec.textContent.toLowerCase();
+          if (text.includes(term)) {
+            sec.classList.remove('is-hidden');
+            highlight(sec, term);
+            visible++;
+            if (sec.id) visibleIds.add(sec.id);
+          } else {
+            sec.classList.add('is-hidden');
+          }
+        });
+
+        status.textContent = term ? `${visible} seção(ões) encontradas para “${q}”.` : '';
+
+        updateTOCCounts(visibleIds, term);
+        return { visible, firstId: Array.from(visibleIds)[0] || null };
+      }
+
+      // Atualiza em tempo real enquanto digita
+      input.addEventListener('input', e => doFilter(e.target.value));
+
+      // Enviar (Enter ou clique no botão): filtra e rola para a primeira seção visível
+      form?.addEventListener('submit', e => {
+        e.preventDefault();
+        const { firstId } = doFilter(input.value);
+        if (firstId) {
+          const target = document.getElementById(firstId);
+          target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+
+      // Atalho "/" foca a busca; Esc limpa
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== input) {
+          e.preventDefault();
+          input.focus();
+        } else if (e.key === 'Escape' && input.value) {
+          input.value = '';
+          doFilter('');
+          input.blur();
+        }
+      });
+    })();
+
   </script>
 </body>
+
 </html>
