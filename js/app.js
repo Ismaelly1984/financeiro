@@ -18,6 +18,39 @@ let _alertState = { geral: null, categorias: {} };
 const has = (sel) => !!document.querySelector(sel);
 
 /* =========================
+   Helpers robustos
+   ========================= */
+function parseBRFloat(v) {
+  // aceita "12,34" e "12.34"; remove separador de milhar comum
+  if (v == null) return NaN;
+  return parseFloat(String(v).replace(/\./g, '').replace(',', '.'));
+}
+function isFiniteNumber(n) {
+  return typeof n === 'number' && Number.isFinite(n);
+}
+// Comparação de datas "YYYY-MM-DD" sem surpresas de fuso/UTC
+function isoWithin(dateStr, startStr, endStr) {
+  if (!dateStr) return false;
+  const d = dateStr.slice(0, 10);
+  const okStart = startStr ? (d >= startStr.slice(0, 10)) : true;
+  const okEnd   = endStr   ? (d <= endStr.slice(0, 10))   : true;
+  return okStart && okEnd;
+}
+function getCssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function chartColors() {
+  return {
+    text: getCssVar('--cor-texto') || '#fff',
+    grid: 'rgba(148,163,184,0.15)',
+    primary: getCssVar('--cor-primaria') || '#3B82F6',
+    success: getCssVar('--cor-sucesso') || '#10B981',
+    danger: getCssVar('--cor-aviso') || '#EF4444',
+  };
+}
+const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+/* =========================
    Boot
    ========================= */
 function init() {
@@ -107,6 +140,9 @@ function init() {
     hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
   }
 
+  // Marcar link ativo (nav + footer)
+  dom.marcarNavAtiva?.();
+
   // Eventos internos (event bus)
   on(EVENT_NAMES.DATA_UPDATED, updateUI);
   on(EVENT_NAMES.EDIT_REQUESTED, handleEditRequest);
@@ -167,13 +203,13 @@ function salvarPreferenciasUI() {
 function handleAddTransaction(e) {
   e.preventDefault();
   const descricao = dom.form.descricao.value.trim();
-  const valor = parseFloat(dom.form.valor.value);
+  const valor = parseBRFloat(dom.form.valor.value);
   const tipo = dom.form.tipo.value;
   const categoria = dom.form.categoria.value;
-  const data = dom.form.data.value;
+  const data = dom.form.data.value; // "YYYY-MM-DD"
 
-  if (!descricao || !valor || !data) {
-    dom.exibirMensagem?.('Por favor, preencha todos os campos.', 'aviso');
+  if (!descricao || !isFiniteNumber(valor) || !data) {
+    dom.exibirMensagem?.('Por favor, preencha todos os campos com valores válidos.', 'aviso');
     return;
   }
 
@@ -191,16 +227,16 @@ function handleEditRequest(event) {
 
 function handleEditTransaction(e) {
   e.preventDefault();
-  const valor = parseFloat(dom.editValorInput.value);
+  const valor = parseBRFloat(dom.editValorInput.value);
   const data = dom.editDataInput.value;
 
-  if (!dom.editDescricaoInput.value.trim() || !valor || !data) {
-    dom.exibirMensagem?.('Por favor, preencha todos os campos.', 'aviso');
+  if (!dom.editDescricaoInput.value.trim() || !isFiniteNumber(valor) || !data) {
+    dom.exibirMensagem?.('Por favor, preencha todos os campos com valores válidos.', 'aviso');
     return;
   }
 
   const transacaoEditada = {
-    id: parseInt(dom.editIdInput.value),
+    id: parseInt(dom.editIdInput.value, 10),
     descricao: dom.editDescricaoInput.value.trim(),
     valor,
     tipo: dom.editTipoSelect.value,
@@ -239,8 +275,8 @@ function fecharModalConfirmacao() {
    Limite geral
    ========================= */
 function handleSetLimit(e) {
-  const novoLimite = parseFloat(e.target.value);
-  if (novoLimite >= 0) {
+  const novoLimite = parseBRFloat(e.target.value);
+  if (isFiniteNumber(novoLimite) && novoLimite >= 0) {
     limiteGasto = novoLimite;
     storage.salvarLimiteGasto(limiteGasto);
     updateProgressBar();
@@ -287,9 +323,9 @@ function updateProgressBar() {
    ========================= */
 function handleSaveBudget() {
   const categoria = dom.selectCategoriaOrcamento?.value;
-  const limite = parseFloat(dom.inputLimiteCategoria?.value);
+  const limite = parseBRFloat(dom.inputLimiteCategoria?.value);
 
-  if (categoria && limite > 0) {
+  if (categoria && isFiniteNumber(limite) && limite > 0) {
     orcamentosPorCategoria[categoria] = limite;
     storage.salvarOrcamentosPorCategoria(orcamentosPorCategoria);
     dom.exibirMensagem?.(`Orçamento de ${dom.formatBRL?.(limite) ?? limite} para ${categoria} salvo!`, 'success');
@@ -320,7 +356,7 @@ function updateBudgetsUI() {
     item.classList.add('orcamento-item');
     item.innerHTML = `
       <div class="orcamento-header">
-        <span><i class="fas ${dom.getIconClass?.(categoria) ?? 'fa-tag'}"></i> ${categoria}</span>
+        <span><i class="fas ${dom.getIconClass?.(categoria) ?? 'fa-tag'}"></i> ${getLabelFor(categoria)}</span>
         <span>${dom.formatBRL?.(gasto) ?? gasto.toFixed(2)} / ${dom.formatBRL?.(limite) ?? limite.toFixed(2)}</span>
       </div>
       <div class="orcamento-barra">
@@ -337,11 +373,11 @@ function updateBudgetsUI() {
     if (limite > 0) {
       if (ratio >= ALERT_THRESHOLDS.exceed && prev !== 'exceed') {
         _alertState.categorias[categoria] = 'exceed';
-        dom.exibirMensagem?.(`Excedeu o orçamento de ${categoria}.`, 'aviso', 5000);
+        dom.exibirMensagem?.(`Excedeu o orçamento de ${getLabelFor(categoria)}.`, 'aviso', 5000);
         navigator.vibrate?.(200);
       } else if (ratio >= ALERT_THRESHOLDS.warn && prev !== 'warn' && prev !== 'exceed') {
         _alertState.categorias[categoria] = 'warn';
-        dom.exibirMensagem?.(`Atingiu 80% do orçamento de ${categoria}.`, 'info', 4000);
+        dom.exibirMensagem?.(`Atingiu 80% do orçamento de ${getLabelFor(categoria)}.`, 'info', 4000);
         navigator.vibrate?.([60, 40, 60]);
       } else if (ratio < ALERT_THRESHOLDS.warn) {
         _alertState.categorias[categoria] = null;
@@ -355,7 +391,7 @@ function updateBudgetsUI() {
       const categoria = e.currentTarget.dataset.categoria;
       delete orcamentosPorCategoria[categoria];
       storage.salvarOrcamentosPorCategoria(orcamentosPorCategoria);
-      dom.exibirMensagem?.(`Orçamento de ${categoria} removido.`, 'aviso');
+      dom.exibirMensagem?.(`Orçamento de ${getLabelFor(categoria)} removido.`, 'aviso');
       emit(EVENT_NAMES.ORCAMENTOS_UPDATED);
     });
   });
@@ -436,25 +472,10 @@ function exportarCSV() {
 let relChartLine = null;
 let relChartPie = null;
 
-function getCssVar(name) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-function chartColors() {
-  return {
-    text: getCssVar('--cor-texto') || '#fff',
-    grid: 'rgba(148,163,184,0.15)',
-    primary: getCssVar('--cor-primaria') || '#3B82F6',
-    success: getCssVar('--cor-sucesso') || '#10B981',
-    danger: getCssVar('--cor-aviso') || '#EF4444',
-  };
-}
-const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-
 function rangePreset(preset) {
   const today = new Date();
   const pad = (n) => String(n).padStart(2, '0');
   const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
   if (preset === 'mes') {
     const ini = new Date(today.getFullYear(), today.getMonth(), 1);
     const fim = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -475,13 +496,9 @@ function agrupar(chave, agrup) {
 
 function filtrarPorDataETipo(transacoes, inicio, fim, incReceitas, incDespesas) {
   const arr = Object.values(transacoes);
-  const dIni = inicio ? new Date(inicio) : null;
-  const dFim = fim ? new Date(fim) : null;
-
   return arr.filter(t => {
-    const d = new Date(t.data);
-    if (dIni && d < dIni) return false;
-    if (dFim && d > dFim) return false;
+    if (!t?.data) return false;
+    if (!isoWithin(t.data, inicio, fim)) return false;
     if (t.tipo === 'receita' && !incReceitas) return false;
     if (t.tipo === 'despesa' && !incDespesas) return false;
     return true;

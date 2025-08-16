@@ -1,39 +1,69 @@
 {
-  "name": "MeuFinanceiro App",
+  "name": "MeuFinanceiro",
   "short_name": "Financeiro",
-  "start_url": "./",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#1e1e1e",
-  "theme_color": "#1a73e8",
+  "display_override": ["standalone", "browser"],
+  "background_color": "#0b1220",
+  "theme_color": "#3b82f6",
   "description": "Aplicativo de controle financeiro pessoal.",
   "icons": [
     {
-      "src": "./icons/icon-192x192.png",
+      "src": "/assets/icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "./icons/icon-512x512.png",
+      "src": "/assets/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "./favicon.png",
-      "sizes": "144x144",
-      "type": "image/png"
+      "src": "/favicon.png",
+      "sizes": "16x16 32x32 64x64 144x144",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "./images/screenshot1.png",
-      "sizes": "640x480",
+      "src": "/assets/screenshots/resumo.png",
+      "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Resumo"
     },
     {
-      "src": "./images/screenshot1.png",
-      "sizes": "640x480",
-      "type": "image/png"
+      "src": "/assets/screenshots/transacoes.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Transações"
+    },
+    {
+      "src": "/assets/screenshots/relatorios.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Relatórios"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Transações",
+      "short_name": "Transações",
+      "url": "/pages/transacoes.html",
+      "icons": [{ "src": "/assets/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    { "name": "Gráficos", "short_name": "Gráficos", "url": "/pages/graficos.html" },
+    { "name": "Relatórios", "short_name": "Relatórios", "url": "/pages/relatorios.html" },
+    { "name": "Ajuda", "short_name": "Ajuda", "url": "/pages/help.html" }
+  ],
+  "categories": ["finance", "productivity"],
+  "prefer_related_applications": false
 }

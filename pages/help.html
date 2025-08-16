@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ajuda • MeuFinanceiro</title>
 
   <!-- Estilo/tema do app -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" type="image/png" href="../favicon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <!-- FAQ estruturado para SEO -->
@@ -28,9 +27,7 @@
 
   <style>
     /* Complementos leves só para a página de ajuda */
-    :root {
-      scroll-behavior: smooth;
-    }
+    :root { scroll-behavior: smooth; }
 
     .help-hero {
       background: var(--cor-secundaria);
@@ -42,255 +39,93 @@
       align-items: flex-start;
       box-shadow: var(--sombra-escura);
     }
-
-    .help-hero i {
-      font-size: 1.75rem;
-      color: var(--cor-primaria);
-      margin-top: .15rem
-    }
-
-    .help-intro {
-      max-width: 900px;
-      margin: 1rem auto 2rem;
-      color: var(--cor-texto-secundario)
-    }
+    .help-hero i { font-size: 1.75rem; color: var(--cor-primaria); margin-top: .15rem }
+    .help-intro { max-width: 900px; margin: 1rem auto 2rem; color: var(--cor-texto-secundario) }
 
     .toc {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: .75rem;
-      margin: 1rem 0 2rem
+      gap: .75rem; margin: 1rem 0 2rem
     }
-
     .toc a {
-      display: block;
-      background: var(--cor-secundaria);
-      border: 1px solid var(--cor-borda);
-      border-radius: 10px;
-      padding: .75rem 1rem;
-      text-decoration: none;
-      color: var(--cor-texto);
+      display: block; background: var(--cor-secundaria);
+      border: 1px solid var(--cor-borda); border-radius: 10px;
+      padding: .75rem 1rem; text-decoration: none; color: var(--cor-texto);
       box-shadow: var(--sombra-escura)
     }
-
-    .toc a:hover {
-      border-color: var(--cor-primaria)
-    }
+    .toc a:hover { border-color: var(--cor-primaria) }
 
     .help-section {
       background: var(--cor-secundaria);
       border: 1px solid var(--cor-borda);
-      border-radius: 12px;
-      box-shadow: var(--sombra-escura);
-      padding: 1.25rem;
-      margin-bottom: 1rem
+      border-radius: 12px; box-shadow: var(--sombra-escura);
+      padding: 1.25rem; margin-bottom: 1rem
     }
-
-    .help-section h3 {
-      margin-bottom: .5rem;
-      color: var(--cor-primaria)
-    }
+    .help-section h3 { margin-bottom: .5rem; color: var(--cor-primaria) }
 
     .kbd {
-      display: inline-block;
-      border: 1px solid var(--cor-borda);
-      border-bottom-width: 2px;
-      border-radius: 6px;
-      padding: .1rem .4rem;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      background: var(--cor-fundo)
+      display: inline-block; border: 1px solid var(--cor-borda);
+      border-bottom-width: 2px; border-radius: 6px; padding: .1rem .4rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--cor-fundo)
     }
 
-    details.faq {
-      border: 1px solid var(--cor-borda);
-      border-radius: 10px;
-      padding: .75rem 1rem;
-      background: var(--cor-secundaria)
-    }
+    details.faq { border: 1px solid var(--cor-borda); border-radius: 10px; padding: .75rem 1rem; background: var(--cor-secundaria) }
+    details.faq+details.faq { margin-top: .6rem }
+    details.faq summary { cursor: pointer; font-weight: 600; color: var(--cor-texto) }
 
-    details.faq+details.faq {
-      margin-top: .6rem
-    }
-
-    details.faq summary {
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--cor-texto)
-    }
-
-    .support-links a {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem
-    }
-
+    .support-links a { display: inline-flex; align-items: center; gap: .5rem }
     .badge {
       display: inline-block;
       background: color-mix(in srgb, var(--cor-primaria) 20%, transparent);
-      border: 1px solid var(--cor-borda);
-      padding: .1rem .5rem;
-      border-radius: 999px;
-      margin-left: .4rem;
-      font-size: .85rem
+      border: 1px solid var(--cor-borda); padding: .1rem .5rem; border-radius: 999px;
+      margin-left: .4rem; font-size: .85rem
     }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      text-decoration: none;
-      color: var(--cor-texto)
-    }
+    .back-link { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: var(--cor-texto) }
+    .back-link:hover { color: var(--cor-primaria) }
 
-    .back-link:hover {
-      color: var(--cor-primaria)
-    }
+    .list-check { list-style: none; padding-left: 0 }
+    .list-check li { display: flex; gap: .6rem; align-items: flex-start }
+    .list-check li i { color: var(--cor-sucesso); margin-top: .2rem }
 
-    .list-check {
-      list-style: none;
-      padding-left: 0
-    }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1rem }
+    .table-wrap { overflow: auto; border: 1px solid var(--cor-borda); border-radius: 10px }
+    table { width: 100%; border-collapse: collapse }
+    th, td { padding: .7rem; border-bottom: 1px solid var(--cor-borda); text-align: left }
+    th { color: var(--cor-texto); background: color-mix(in srgb, var(--cor-primaria) 12%, transparent) }
+    .muted { color: var(--cor-texto-secundario); font-size: .95rem }
+    .tip { font-size: .95rem; color: var(--cor-texto-secundario) }
 
-    .list-check li {
-      display: flex;
-      gap: .6rem;
-      align-items: flex-start
-    }
-
-    .list-check li i {
-      color: var(--cor-sucesso);
-      margin-top: .2rem
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem
-    }
-
-    .table-wrap {
-      overflow: auto;
-      border: 1px solid var(--cor-borda);
-      border-radius: 10px
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse
-    }
-
-    th,
-    td {
-      padding: .7rem;
-      border-bottom: 1px solid var(--cor-borda);
-      text-align: left
-    }
-
-    th {
-      color: var(--cor-texto);
-      background: color-mix(in srgb, var(--cor-primaria) 12%, transparent)
-    }
-
-    .muted {
-      color: var(--cor-texto-secundario);
-      font-size: .95rem
-    }
-
-    .tip {
-      font-size: .95rem;
-      color: var(--cor-texto-secundario)
-    }
-
-    @media (min-width: 900px) {
-      .grid-2 {
-        grid-template-columns: 1fr 1fr
-      }
-    }
+    @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr } }
 
     /* ===== Pesquisa ===== */
-    .search-wrap {
-      display: grid;
-      gap: .75rem
-    }
-
+    .search-wrap { display: grid; gap: .75rem }
     .search-input {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      padding: .65rem .8rem;
-      border: 1px solid var(--cor-borda);
-      border-radius: 10px;
-      background: var(--cor-fundo)
+      display: flex; align-items: center; gap: .6rem;
+      padding: .65rem .8rem; border: 1px solid var(--cor-borda);
+      border-radius: 10px; background: var(--cor-fundo)
     }
-
     .search-input input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      color: var(--cor-texto);
-      font-size: 1rem
+      flex: 1; border: none; outline: none; background: transparent;
+      color: var(--cor-texto); font-size: 1rem
     }
+    .search-input i { color: var(--cor-texto-secundario) }
+    .search-status { min-height: 1.2rem; color: var(--cor-texto-secundario); font-size: .95rem }
 
-    .search-input i {
-      color: var(--cor-texto-secundario)
-    }
-
-    .search-status {
-      min-height: 1.2rem;
-      color: var(--cor-texto-secundario);
-      font-size: .95rem
-    }
-
-    .help-section.is-hidden {
-      display: none
-    }
+    .help-section.is-hidden { display: none }
 
     /* Destaque do termo encontrado */
     mark.search-hit {
       background: color-mix(in srgb, var(--cor-primaria) 28%, transparent);
-      color: var(--cor-texto);
-      padding: .05rem .2rem;
-      border-radius: .25rem;
+      color: var(--cor-texto); padding: .05rem .2rem; border-radius: .25rem;
     }
 
     /* TOC: mostra contagem por item quando filtrado */
     .toc a .count-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 1.2rem;
-      height: 1.2rem;
-      font-size: .8rem;
-      margin-left: .35rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 1.2rem; height: 1.2rem; font-size: .8rem; margin-left: .35rem;
       background: color-mix(in srgb, var(--cor-primaria) 25%, transparent);
-      border: 1px solid var(--cor-borda);
-      border-radius: 999px;
-      padding: 0 .3rem;
-      color: var(--cor-texto);
-    }
-
-    .search-input {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      padding: .65rem .8rem;
-      border: 1px solid var(--cor-borda);
-      border-radius: 10px;
-      background: var(--cor-fundo)
-    }
-
-    .search-input input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      color: var(--cor-texto);
-      font-size: 1rem
-    }
-
-    .search-input i {
-      color: var(--cor-texto-secundario)
+      border: 1px solid var(--cor-borda); border-radius: 999px; padding: 0 .3rem; color: var(--cor-texto);
     }
   </style>
 </head>
@@ -299,7 +134,7 @@
   <!-- Navbar enxuta (sem Limite/Orçamento na nav; eles vivem no Resumo) -->
   <nav class="navbar" role="navigation" aria-label="Navegação principal">
     <div class="navbar-container">
-      <a href="index.html" class="back-link" aria-label="Voltar para o app">
+      <a href="../index.html" class="back-link" aria-label="Voltar para o app">
         <i class="fas fa-arrow-left"></i> Voltar
       </a>
       <h1 class="logo" aria-label="MeuFinanceiro - Ajuda">Ajuda</h1>
@@ -323,6 +158,7 @@
         </div>
       </div>
     </header>
+
     <!-- Pesquisa (filtro instantâneo + botão) -->
     <section class="help-section" aria-labelledby="busca-title">
       <h3 id="busca-title">Pesquisar na Ajuda</h3>
@@ -339,7 +175,6 @@
         <div id="help-search-status" class="search-status" role="status" aria-live="polite"></div>
       </form>
     </section>
-
 
     <!-- Sumário -->
     <nav aria-label="Sumário">
@@ -488,32 +323,14 @@
       <div class="table-wrap" role="region" aria-label="Tabela de atalhos">
         <table>
           <thead>
-            <tr>
-              <th>Ação</th>
-              <th>Atalho</th>
-            </tr>
+            <tr><th>Ação</th><th>Atalho</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Abrir Adicionar Transação</td>
-              <td><span class="kbd">A</span></td>
-            </tr>
-            <tr>
-              <td>Salvar (no modal de edição)</td>
-              <td><span class="kbd">Enter</span></td>
-            </tr>
-            <tr>
-              <td>Excluir transação selecionada</td>
-              <td><span class="kbd">Delete</span> / <span class="kbd">Backspace</span></td>
-            </tr>
-            <tr>
-              <td>Alternar tema</td>
-              <td><span class="kbd">T</span></td>
-            </tr>
-            <tr>
-              <td>Ordenação asc/desc</td>
-              <td><span class="kbd">O</span></td>
-            </tr>
+            <tr><td>Abrir Adicionar Transação</td><td><span class="kbd">A</span></td></tr>
+            <tr><td>Salvar (no modal de edição)</td><td><span class="kbd">Enter</span></td></tr>
+            <tr><td>Excluir transação selecionada</td><td><span class="kbd">Delete</span> / <span class="kbd">Backspace</span></td></tr>
+            <tr><td>Alternar tema</td><td><span class="kbd">T</span></td></tr>
+            <tr><td>Ordenação asc/desc</td><td><span class="kbd">O</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -525,8 +342,7 @@
       <h3 id="faq-title">FAQ</h3>
       <details class="faq">
         <summary>Meus dados ficam salvos onde?</summary>
-        <p>Localmente, no seu navegador (Local Storage). Nada é enviado para servidores. Use exportação CSV como backup.
-        </p>
+        <p>Localmente, no seu navegador (Local Storage). Nada é enviado para servidores. Use exportação CSV como backup.</p>
       </details>
       <details class="faq">
         <summary>Posso usar offline?</summary>
@@ -562,10 +378,8 @@
         <div>
           <p>Fale com a gente:</p>
           <div class="support-links">
-            <p><a href="https://wa.me/5599999999999" rel="noopener" target="_blank"><i class="fab fa-whatsapp"></i>
-                WhatsApp</a></p>
-            <p><a href="mailto:suporte@meufinanceiro.app?subject=Ajuda%20-%20MeuFinanceiro"><i
-                  class="fas fa-envelope"></i> suporte@meufinanceiro.app</a></p>
+            <p><a href="https://wa.me/5599999999999" rel="noopener" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a></p>
+            <p><a href="mailto:suporte@meufinanceiro.app?subject=Ajuda%20-%20MeuFinanceiro"><i class="fas fa-envelope"></i> suporte@meufinanceiro.app</a></p>
           </div>
         </div>
         <div>
@@ -577,8 +391,7 @@
           </ul>
         </div>
       </div>
-      <p style="margin-top:1rem"><a href="#topo" class="back-link"><i class="fas fa-arrow-up"></i> Voltar ao topo</a>
-      </p>
+      <p style="margin-top:1rem"><a href="#topo" class="back-link"><i class="fas fa-arrow-up"></i> Voltar ao topo</a></p>
     </section>
   </main>
 
@@ -587,13 +400,12 @@
     <div class="footer-container">
       <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
       <div class="footer-links">
-        <a href="index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
-        <a href="transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
-        <a href="graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
+        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
+        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
+        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
         <!-- Links diretos para seções do Resumo -->
-        <a href="index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i class="fas fa-bullseye"></i></a>
-        <a href="index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i
-            class="fas fa-money-check-alt"></i></a>
+        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i class="fas fa-bullseye"></i></a>
+        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i class="fas fa-money-check-alt"></i></a>
       </div>
     </div>
   </footer>
@@ -629,18 +441,15 @@
       });
     })();
 
-
     (function helpSearch() {
       const form = document.getElementById('help-search-form');
       const input = document.getElementById('help-search');
       const status = document.getElementById('help-search-status');
-
       if (!input || !status) return;
 
       // todas as seções de ajuda (exceto a própria seção de busca)
       const sections = Array.from(document.querySelectorAll('.help-section'))
         .filter(s => !s.contains(input));
-
       const tocLinks = Array.from(document.querySelectorAll('.toc a'));
 
       function clearMarks(node) {
@@ -716,7 +525,6 @@
         });
 
         status.textContent = term ? `${visible} seção(ões) encontradas para “${q}”.` : '';
-
         updateTOCCounts(visibleIds, term);
         return { visible, firstId: Array.from(visibleIds)[0] || null };
       }
@@ -746,8 +554,6 @@
         }
       });
     })();
-
   </script>
 </body>
-
 </html>

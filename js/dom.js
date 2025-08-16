@@ -53,16 +53,39 @@ export function getIconClass(categoria) {
 }
 
 /**
- * Marca o link ativo no menu e no rodapé, comparando o href com a página atual.
- * Chame no boot do app: marcarNavAtiva()
+ * Marca o link ativo no menu e no rodapé com base no caminho absoluto,
+ * resolvendo ./ e ../, e tratando index.html/trailing slash como equivalentes.
+ * Chame no boot do app: dom.marcarNavAtiva()
  */
 export function marcarNavAtiva() {
-  const atual = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  const norm = (p) => {
+    // remove barras finais, exceto a raiz "/", e trata "" como "/index.html"
+    let pathname = p || '/';
+    if (pathname.length > 1) pathname = pathname.replace(/\/+$/, '');
+    if (pathname === '') pathname = '/';
+    // se for só "/", considere "/index.html" para comparação com hrefs explícitos
+    return pathname === '/' ? '/index.html' : pathname;
+  };
+
+  const current = norm(new URL(location.href).pathname);
+
   document.querySelectorAll('.nav-links a, .footer-links a').forEach((a) => {
-    const alvo = (a.getAttribute('href') || '').toLowerCase();
-    if (!alvo) return;
-    if (alvo === atual) a.classList.add('active');
-    else a.classList.remove('active');
+    const hrefAttr = a.getAttribute('href');
+    if (!hrefAttr) return;
+
+    const targetPath = norm(new URL(hrefAttr, location.href).pathname);
+
+    // também trate links apontando para seções (#) ou âncoras do index
+    const isActive = targetPath === current ||
+                     (targetPath === '/index.html' && (current === '/' || current === '/index.html'));
+
+    if (isActive) {
+      a.classList.add('active');
+      a.setAttribute('aria-current', 'page');
+    } else {
+      a.classList.remove('active');
+      a.removeAttribute('aria-current');
+    }
   });
 }
 
@@ -75,14 +98,16 @@ export function exibirMensagem(texto, tipo = 'info', duracao = 3000) {
     mensagemDiv = document.createElement('div');
     mensagemDiv.id = 'mensagem-app';
     mensagemDiv.className = 'mensagem-app';
+    mensagemDiv.setAttribute('role', 'status');
+    mensagemDiv.setAttribute('aria-live', 'polite');
     document.body.prepend(mensagemDiv);
   }
   mensagemDiv.textContent = texto;
-  mensagemDiv.setAttribute('role', 'status');
-  mensagemDiv.setAttribute('aria-live', 'polite');
   mensagemDiv.className = `mensagem-app show ${tipo}`;
   window.setTimeout(() => {
     mensagemDiv.classList.remove('show', tipo);
+    // mantém classe base para reaproveitar o elemento
+    mensagemDiv.classList.add('mensagem-app');
   }, duracao);
 }
 
@@ -95,7 +120,10 @@ export function criarItemTransacao(t) {
   li.dataset.id = t.id;
   li.tabIndex = 0;
   li.setAttribute('role', 'listitem');
- li.setAttribute('aria-label', `${t.descricao}, ${getLabelFor(t.categoria)}, ${t.data}, valor ${formatBRL(parseFloat(t.valor))}`);
+  li.setAttribute(
+    'aria-label',
+    `${t.descricao}, ${getLabelFor(t.categoria)}, ${t.data}, valor ${formatBRL(parseFloat(t.valor))}`
+  );
 
   // bloco info (ícone, descrição, data/categoria)
   const info = document.createElement('div');
@@ -112,6 +140,7 @@ export function criarItemTransacao(t) {
   const dataCat = document.createElement('span');
   dataCat.className = 'data';
   dataCat.textContent = `${t.data} — ${getLabelFor(t.categoria)}`;
+
   info.append(icon, desc, dataCat);
 
   // valor
@@ -203,6 +232,7 @@ function filtrarEOrdenar(array, filtroTipo, filtroCategoria, ordenarPor, ordemAs
         break;
       case 'data':
       default:
+        // usa timestamp para ordenar de forma consistente
         valA = new Date(a.data || 0).getTime();
         valB = new Date(b.data || 0).getTime();
         break;
@@ -240,7 +270,7 @@ export function prepararParaRemocao(e, onConfirm) {
   e.stopPropagation();
   modalConfirmacao.style.display = 'flex';
 
-  // Evita empilhar handlers
+  // Evita empilhar handlers recriando os botões
   confirmarExclusaoBtn?.replaceWith(confirmarExclusaoBtn.cloneNode(true));
   cancelarExclusaoBtn?.replaceWith(cancelarExclusaoBtn.cloneNode(true));
 
