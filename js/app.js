@@ -163,9 +163,15 @@ function init() {
 
   // Service Worker
   if ('serviceWorker' in navigator) {
-    let serviceWorkerPath = '/service-worker.js';
-    if (window.location.pathname.includes('/financeiro/')) serviceWorkerPath = '/financeiro/service-worker.js';
-    navigator.serviceWorker.register(serviceWorkerPath).catch(() => { });
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(reg => {
+          console.log('✅ Service Worker registrado com sucesso:', reg);
+        })
+        .catch(err => {
+          console.error('❌ Erro ao registrar Service Worker:', err);
+        });
+    });
   }
 }
 
