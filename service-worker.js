@@ -1,5 +1,7 @@
 // service-worker.js
-const CACHE_NAME = 'meu-financeiro-cache-v4';
+// v5: adicionada página offline.html, suporte Google Fonts e fallback de imagens
+
+const CACHE_NAME = 'meu-financeiro-cache-v5';
 
 // Tudo com caminhos ABSOLUTOS para garantir o escopo na raiz
 const PRECACHE_URLS = [
@@ -11,11 +13,12 @@ const PRECACHE_URLS = [
   '/pages/graficos.html',
   '/pages/relatorios.html',
   '/pages/transacoes.html',
+  '/offline.html',
 
   // CSS
   '/assets/css/style.css',
 
-  // JS (ordem não importa para cache, mas deixo organizado)
+  // JS
   '/js/config.js',
   '/js/eventEmitter.js',
   '/js/storage.js',
@@ -29,6 +32,7 @@ const PRECACHE_URLS = [
   '/favicon.png',
   '/assets/icons/web-app-manifest-192x192.png',
   '/assets/icons/web-app-manifest-512x512.png',
+  '/assets/icons/fallback.png', // usado para imagens offline
 ];
 
 self.addEventListener('install', (event) => {
@@ -85,7 +89,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // Navegações (HTML) → network-first com fallback para shell
+  // Navegações (HTML) → network-first com fallback
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
       try {
@@ -94,7 +98,9 @@ self.addEventListener('fetch', (event) => {
         const fresh = await fetch(req);
         return fresh;
       } catch {
-        return (await caches.match('/index.html')) || new Response('Offline', { status: 503 });
+        return (await caches.match('/offline.html'))
+          || (await caches.match('/index.html'))
+          || new Response('Offline', { status: 503 });
       }
     })());
     return;
@@ -102,25 +108,45 @@ self.addEventListener('fetch', (event) => {
 
   // Mesma origem: recursos estáticos → cache-first; demais → SWR
   if (url.origin === self.location.origin) {
-    const dest = req.destination; // 'style' | 'script' | 'image' | 'font' | 'document' | ''
-    if (['style', 'script', 'image', 'font'].includes(dest)) {
+    const dest = req.destination; // 'style' | 'script' | 'image' | 'font' | 'document'
+    if (['style', 'script', 'font'].includes(dest)) {
       event.respondWith(cacheFirst(req));
-    } else {
-      event.respondWith(staleWhileRevalidate(req));
+      return;
     }
+
+    // Imagens → cache-first com fallback.png
+    if (dest === 'image') {
+      event.respondWith((async () => {
+        const cached = await caches.match(req);
+        if (cached) return cached;
+        try {
+          const fresh = await fetch(req);
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(req, fresh.clone());
+          return fresh;
+        } catch {
+          return caches.match('/assets/icons/fallback.png');
+        }
+      })());
+      return;
+    }
+
+    event.respondWith(staleWhileRevalidate(req));
     return;
   }
 
-  // CDNs → stale-while-revalidate
+  // CDNs (JS/CSS/Fonts) → stale-while-revalidate
   if (
     url.hostname.includes('cdn.jsdelivr.net') ||
-    url.hostname.includes('cdnjs.cloudflare.com')
+    url.hostname.includes('cdnjs.cloudflare.com') ||
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com')
   ) {
     event.respondWith(staleWhileRevalidate(req));
   }
 });
 
-// Atualização rápida do SW (opcional)
+// Atualização rápida do SW
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });

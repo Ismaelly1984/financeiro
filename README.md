@@ -1,100 +1,78 @@
-# 💰 MeuFinanceiro — Seu Controle de Gastos Inteligente (PWA)
+# 💰 MeuFinanceiro App
 
-[![Status](https://img.shields.io/badge/status-ativo-success?style=flat-square)]()
-[![PWA Ready](https://img.shields.io/badge/PWA-Ready-blue?style=flat-square)]()
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-yellow?style=flat-square&logo=javascript)]()
-[![Chart.js](https://img.shields.io/badge/Chart.js-Interactive%20Charts-orange?style=flat-square&logo=chartdotjs)]()
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](./LICENSE)
+Um **PWA (Progressive Web App)** simples e intuitivo para o gerenciamento de finanças pessoais.  
+Funciona **offline**, pode ser **instalado no celular/desktop** e ajuda você a organizar receitas, despesas, gráficos e relatórios.
 
----
-
-**MeuFinanceiro** é um aplicativo de controle financeiro pessoal moderno, responsivo e offline (**PWA**), que permite gerenciar receitas, despesas, orçamentos e limites, com gráficos e relatórios detalhados.
-
-**PWA Ready** • **Vanilla JS** • **Chart.js** • **License: MIT**
 
 ---
 
 ## 🚀 Funcionalidades
 
-- 📊 **Painel Resumo** — Visão geral do saldo, receitas, despesas e orçamento.
-- 📝 **Transações** — Cadastro de receitas e despesas com categorias personalizadas.
-- 📈 **Gráficos Interativos** — Visualização dos dados de forma clara e dinâmica.
-- 📑 **Relatórios** — Exportação de dados, filtros por período e impressão.
-- 📱 **PWA (Progressive Web App)** — Funciona offline e pode ser instalado no dispositivo.
-- 🎨 **Tema Escuro/Claro** — Alternância de tema para melhor experiência visual.
-- 🧮 **Orçamento por Categoria** — Controle de gastos em cada área.
+- ✅ **Registro de Transações**: adicione, edite e exclua receitas e despesas  
+- ✅ **Visão Geral**: saldo, receitas e despesas totais em um único painel  
+- ✅ **Orçamentos**: defina limites mensais por categoria  
+- ✅ **Gráficos**: visualização interativa com **Chart.js**  
+- ✅ **Relatórios**: análise detalhada por período  
+- ✅ **Tema Claro/Escuro**: personalização do visual  
+- ✅ **Modo Offline**: funciona mesmo sem internet (via **Service Worker**)  
+- ✅ **PWA Instalável**: atalho direto no celular ou desktop  
 
 ---
 
-## 🖼️ Screenshots
+## 🛠️ Tecnologias
 
-### 📊 Resumo
-![Resumo](./screenshots/resumo.png)
-
-### 📝 Transações
-![Transações](./screenshots/transacoes.png)
-
-### 📑 Relatórios
-![Relatórios](./screenshots/relatorios.png)
+- **HTML5, CSS3, JavaScript Vanilla**
+- **Chart.js** para gráficos  
+- **LocalStorage** para persistência  
+- **Service Worker + Manifest** para PWA offline  
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 📦 Instalação Local
 
-- **HTML5**
-- **CSS3**
-- **JavaScript (Vanilla JS)**
-- **Chart.js** — Gráficos interativos.
-- **LocalStorage** — Armazenamento local de dados.
-- **PWA** — Funcionalidade offline.
+Clone este repositório:
 
----
-
-## 📦 Instalação
-
-### 1. Clone o repositório
 ```bash
-git clone https://github.com/seu-usuario/meu-financeiro.git
-2. Acesse a pasta do projeto
-bash
-Copiar
-Editar
-cd meu-financeiro
-3. Abra o arquivo index.html no navegador
-Ou use um servidor local como:
+git clone https://github.com/Ismaelly1984/financeiro.git
+Entre na pasta:
 
 bash
 Copiar
 Editar
-npx serve
-📲 Instalação como PWA
-Abra o MeuFinanceiro no navegador.
+cd financeiro
+Inicie um servidor local (ex.: usando Live Server, http-server ou o próprio VSCode):
 
-Clique no ícone "Instalar" ou adicione à tela inicial.
+bash
+Copiar
+Editar
+npx serve .
+Abra no navegador:
 
-Use o app como se fosse nativo, mesmo sem internet.
+arduino
+Copiar
+Editar
+http://localhost:3000
+🌍 Demo Online
+👉 Acesse aqui no GitHub Pages
 
-❓ Ajuda
-Adicionar transação: Vá até a aba Transações, selecione se é receita ou despesa, preencha a categoria, valor e descrição, depois clique em Adicionar.
+📱 Como Instalar (PWA)
+Abra o app no navegador (Chrome, Edge ou Safari)
 
-Definir orçamento: Na tela Resumo, configure o limite mensal e acompanhe o progresso no indicador.
+Clique em "Adicionar à tela inicial" ou "Instalar"
 
-Visualizar relatórios: Na aba Relatórios, escolha um intervalo de datas e clique em Pesquisar para filtrar as transações.
+Use como se fosse um app nativo 🚀
 
-Ver gráficos: Acesse a aba Gráficos para analisar a distribuição e evolução dos seus gastos.
+📖 Documentação
+Política de Privacidade
 
-Alternar tema: Clique no ícone de tema para mudar entre modo claro e escuro.
+Como Contribuir
 
-Funcionamento offline: Depois de instalado como PWA, o aplicativo continua funcionando mesmo sem internet.
+Changelog
 
-📝 Licença
-Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para mais detalhes.
+Licença MIT
 
-📬 Contato
-Autor: Ismael Nunes dos Santos
+📜 Licença
+Este projeto está sob a licença MIT.
+Consulte o arquivo LICENSE.md para mais detalhes.
 
-GitHub: Ismaelly1984
-
-LinkedIn: Ismael Nunes
-
-💙 Desenvolvido para facilitar o controle financeiro pessoal.
+✨ Desenvolvido por Ismael Nunes com paixão por código e organização financeira.

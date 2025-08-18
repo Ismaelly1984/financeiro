@@ -1,4 +1,4 @@
-// app.js (multi-páginas: robusto e idempotente)
+// app.js (multi-páginas: robusto, unificado e idempotente)
 import * as dom from './dom.js';
 import * as storage from './storage.js';
 import * as finance from './finance.js';
@@ -21,7 +21,6 @@ const has = (sel) => !!document.querySelector(sel);
    Helpers robustos
    ========================= */
 function parseBRFloat(v) {
-  // aceita "12,34" e "12.34"; remove separador de milhar comum
   if (v == null) return NaN;
   return parseFloat(String(v).replace(/\./g, '').replace(',', '.'));
 }
@@ -33,7 +32,7 @@ function isoWithin(dateStr, startStr, endStr) {
   if (!dateStr) return false;
   const d = dateStr.slice(0, 10);
   const okStart = startStr ? (d >= startStr.slice(0, 10)) : true;
-  const okEnd   = endStr   ? (d <= endStr.slice(0, 10))   : true;
+  const okEnd = endStr ? (d <= endStr.slice(0, 10)) : true;
   return okStart && okEnd;
 }
 function getCssVar(name) {
@@ -155,22 +154,31 @@ function init() {
     if (e.target === dom.modalConfirmacao) fecharModalConfirmacao();
   });
 
+  // Listas grandes — escolhe automaticamente o modo:
+  // 1) Caixa rolável (#caixa-transacoes) -> 10 por vez
+  // 2) Scroll infinito de página (#filtro-mes) -> 20 por vez
+  if (document.getElementById('caixa-transacoes')) {
+    initTransacoesEmCaixa();
+  } else if (document.getElementById('filtro-mes')) {
+    initInfiniteScrollModule();
+  }
+
   // Render inicial
   emit(EVENT_NAMES.DATA_UPDATED);
 
   // Gera relatório inicial (se estiver na página de relatórios)
   if (relOn) gerarRelatorio();
 
-  // Service Worker
+  // Service Worker (path inteligente para raiz ou /financeiro/)
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(reg => {
-          console.log('✅ Service Worker registrado com sucesso:', reg);
-        })
-        .catch(err => {
-          console.error('❌ Erro ao registrar Service Worker:', err);
-        });
+      let serviceWorkerPath = '/service-worker.js';
+      if (window.location.pathname.includes('/financeiro/')) {
+        serviceWorkerPath = '/financeiro/service-worker.js';
+      }
+      navigator.serviceWorker.register(serviceWorkerPath)
+        .then(reg => console.log('✅ SW registrado:', reg.scope))
+        .catch(err => console.error('❌ Erro ao registrar SW:', err));
     });
   }
 }
@@ -294,7 +302,6 @@ function handleSetLimit(e) {
 }
 
 function updateProgressBar() {
-  // Se não for a página de Limite, não faz nada
   if (!dom.barraProgresso || !dom.gastoAtualSpan || !dom.porcentagemGastoSpan) return;
 
   const { despesas } = finance.calcularSaldo();
@@ -306,7 +313,6 @@ function updateProgressBar() {
   dom.barraProgresso.style.width = `${Math.min(porcentagem, 100)}%`;
   dom.barraProgresso.setAttribute('aria-valuenow', Math.min(porcentagem, 100).toFixed(0));
 
-  // Alertas 80% / 100% com histerese simples
   if (limiteGasto > 0) {
     if (ratio >= ALERT_THRESHOLDS.exceed && _alertState.geral !== 'exceed') {
       _alertState.geral = 'exceed';
@@ -334,7 +340,7 @@ function handleSaveBudget() {
   if (categoria && isFiniteNumber(limite) && limite > 0) {
     orcamentosPorCategoria[categoria] = limite;
     storage.salvarOrcamentosPorCategoria(orcamentosPorCategoria);
-    dom.exibirMensagem?.(`Orçamento de ${dom.formatBRL?.(limite) ?? limite} para ${categoria} salvo!`, 'success');
+    dom.exibirMensagem?.(`Orçamento de ${dom.formatBRL?.(limite) ?? limite} para ${getLabelFor(categoria)} salvo!`, 'success');
     emit(EVENT_NAMES.ORCAMENTOS_UPDATED);
   } else {
     dom.exibirMensagem?.('Por favor, selecione uma categoria e insira um valor positivo.', 'aviso');
@@ -429,8 +435,11 @@ function toggleTema() {
 function updateUI() {
   const transacoesAtuais = finance.getTransacoes();
 
-  // Lista de transações só na página de transações
-  if (dom.renderizarTransacoes && dom.ordenarPorSelect && dom.filtroTipoSelect && dom.filtroCategoriaSelect) {
+  const usaCaixa = !!document.getElementById('caixa-transacoes');
+  const usaInfScroll = !!document.getElementById('filtro-mes');
+
+  // Se estiver usando lista incremental, não renderiza a lista padrão
+  if (!usaCaixa && !usaInfScroll && dom.renderizarTransacoes && dom.ordenarPorSelect && dom.filtroTipoSelect && dom.filtroCategoriaSelect) {
     dom.renderizarTransacoes(
       transacoesAtuais,
       dom.filtroTipoSelect.value,
@@ -450,6 +459,11 @@ function updateUI() {
 
   updateProgressBar();
   updateBudgetsUI();
+
+  // Notifica módulos incrementais
+  if (usaInfScroll && typeof window.__mfInfScrollRefresh === 'function') {
+    window.__mfInfScrollRefresh();
+  }
 }
 
 /* =========================
@@ -484,8 +498,9 @@ function rangePreset(preset) {
   const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   if (preset === 'mes') {
     const ini = new Date(today.getFullYear(), today.getMonth(), 1);
-    const fim = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    return { inicio: toStr(ini), fim: toStr(fim) };
+    const fim = new Date(today.getFullYear(), today.getMonth() + 1);
+    const end = new Date(fim - 1);
+    return { inicio: toStr(ini), fim: toStr(end) };
   }
   if (preset === '30') {
     const ini = new Date(today);
@@ -643,36 +658,24 @@ function gerarRelatorio() {
     }
   }, { current: relChartLine, set current(v) { relChartLine = v; }, get current() { return relChartLine; } });
 
-  // Pizza/Donut por categoria (somente despesas) — padronizado
+  // Pizza/Donut por categoria (somente despesas)
   const pieCtx = document.getElementById('rel-grafico-pizza')?.getContext('2d');
   const entries = Object.entries(porCategoria)
     .filter(([, v]) => (+v || 0) > 0)
     .sort((a, b) => b[1] - a[1]);
 
   const catLabels = entries.map(([c]) => getLabelFor(c));
-  const catData   = entries.map(([, v]) => v);
+  const catData = entries.map(([, v]) => v);
   const catColors = entries.map(([c]) => getColorFor(c));
 
   renderOrReplaceChart(pieCtx, {
     type: 'doughnut',
-    data: {
-      labels: catLabels,
-      datasets: [{
-        data: catData,
-        backgroundColor: catColors,
-        hoverBackgroundColor: catColors.map(c => c + 'CC'),
-        borderWidth: 1
-      }]
-    },
+    data: { labels: catLabels, datasets: [{ data: catData, backgroundColor: catColors, hoverBackgroundColor: catColors.map(c => c + 'CC'), borderWidth: 1 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { color: ct.text, boxWidth: 12, padding: 12, font: { size: 11 } } },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => `${ctx.label}: ${BRL.format(+ctx.raw || 0)}`
-          }
-        }
+        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${BRL.format(+ctx.raw || 0)}` } }
       },
       cutout: '55%'
     }
@@ -710,18 +713,15 @@ function exportarRelatorioCSV() {
    Demo data (semente)
    ========================= */
 function ymd(y, m, d) {
-  // m: 1-12
   const mm = String(m).padStart(2, '0');
   const dd = String(d).padStart(2, '0');
   return `${y}-${mm}-${dd}`;
 }
 function carregarDadosDeExemplo() {
-  // Gera um conjunto variado: últimos 6–7 meses, várias categorias e tipos
   const now = new Date();
   const anoAtual = now.getFullYear();
   const mesAtual = now.getMonth() + 1; // 1-12
 
-  // Meses relativos (ajusta ano quando cruza janeiro)
   const rel = (offset) => {
     let m = mesAtual + offset; let y = anoAtual;
     while (m <= 0) { m += 12; y -= 1; }
@@ -774,7 +774,6 @@ function carregarDadosDeExemplo() {
     { descricao: 'Mercado', valor: 570, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-5).y, rel(-5).m, 12) },
   ];
 
-  // Insere via EventBus (finance.js escuta e já persiste no storage)
   exemplos.forEach((t) => {
     emit(EVENT_NAMES.TRANSACTION_ADDED, { ...t, id: Date.now() + Math.floor(Math.random() * 1e6) });
   });
@@ -784,6 +783,234 @@ function carregarDadosDeExemplo() {
 }
 
 /* =========================
+   Módulo opcional: scroll infinito + filtro por mês
+   ========================= */
+function initInfiniteScrollModule() {
+  const lista = document.getElementById('lista-transacoes');
+  const filtroMes = document.getElementById('filtro-mes'); // <input type="month">
+  const loading = document.getElementById('loading');       // <div id="loading">Carregando...</div>
+
+  if (!lista || !filtroMes) return; // só ativa se a página implementou os elementos
+
+  const POR_PAGINA = 20;
+  let pagina = 0;
+  let filtradas = [];
+
+  function obterTodas() {
+    return Object.values(finance.getTransacoes()).map(t => ({
+      ...t,
+      __date: new Date(t.data)
+    }));
+  }
+
+  function aplicaFiltroAtual() {
+    const todas = obterTodas();
+
+    // Filtro por mês/ano
+    const mesSelecionado = filtroMes.value; // ex: "2025-08"
+    let porMes = todas;
+    if (mesSelecionado) {
+      const [ano, mes] = mesSelecionado.split('-').map(Number);
+      porMes = todas.filter(t =>
+        t.__date.getFullYear() === ano && (t.__date.getMonth() + 1) === mes
+      );
+    }
+
+    // Filtros de tipo/categoria (se existirem na página)
+    const tipo = dom.filtroTipoSelect?.value || 'todos';
+    const categoria = dom.filtroCategoriaSelect?.value || 'todas';
+
+    filtradas = porMes.filter(t => {
+      if (tipo !== 'todos' && t.tipo !== tipo) return false;
+      if (categoria !== 'todas' && t.categoria !== categoria) return false;
+      return true;
+    });
+
+    // Ordenação (se houver controles)
+    const ordenarPor = dom.ordenarPorSelect?.value || 'data';
+    const asc = ordemAscendente;
+
+    filtradas.sort((a, b) => {
+      if (ordenarPor === 'valor') return asc ? a.valor - b.valor : b.valor - a.valor;
+      if (ordenarPor === 'descricao') {
+        return asc
+          ? (a.descricao || '').localeCompare(b.descricao || '')
+          : (b.descricao || '').localeCompare(a.descricao || '');
+      }
+      // data
+      return asc ? (a.__date - b.__date) : (b.__date - a.__date);
+    });
+
+    // Reset da lista
+    lista.innerHTML = '';
+    pagina = 0;
+    if (!filtradas.length) {
+      lista.innerHTML = '<li class="transacao-item" style="justify-content:center">Nenhuma transação neste período.</li>';
+      loading && (loading.style.display = 'none');
+      return;
+    }
+    carregarMais();
+  }
+
+  function carregarMais() {
+    const inicio = pagina * POR_PAGINA;
+    const fim = inicio + POR_PAGINA;
+    const lote = filtradas.slice(inicio, fim);
+
+    lote.forEach(t => {
+      const li = dom.criarItemTransacao ? dom.criarItemTransacao(t) : (() => {
+        const el = document.createElement('li');
+        el.className = 'transacao-item';
+        el.textContent = `${t.data} — ${t.descricao} — ${BRL.format(+t.valor || 0)}`;
+        return el;
+      })();
+      lista.appendChild(li);
+    });
+
+    pagina++;
+    if (loading) loading.style.display = 'none';
+  }
+
+  // Scroll listener com throttling via rAF
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const nearBottom = window.innerHeight + window.scrollY >= (document.body.offsetHeight - 50);
+      const aindaTem = pagina * POR_PAGINA < filtradas.length;
+      if (nearBottom && aindaTem) {
+        if (loading) loading.style.display = 'block';
+        setTimeout(carregarMais, 300);
+      }
+      ticking = false;
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Controles → refiltrar
+  filtroMes.addEventListener('change', aplicaFiltroAtual);
+  dom.filtroTipoSelect?.addEventListener('change', aplicaFiltroAtual);
+  dom.filtroCategoriaSelect?.addEventListener('change', aplicaFiltroAtual);
+  dom.ordenarPorSelect?.addEventListener('change', aplicaFiltroAtual);
+  dom.toggleOrdenacaoBtn?.addEventListener('click', () => {
+    toggleOrdenacao();
+    aplicaFiltroAtual();
+  });
+
+  // Expor função para atualizar quando dados mudarem
+  window.__mfInfScrollRefresh = () => aplicaFiltroAtual();
+
+  // Se não houver valor, define mês atual por padrão
+  if (!filtroMes.value) {
+    const hoje = new Date();
+    filtroMes.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  // Primeira renderização
+  aplicaFiltroAtual();
+}
+
+/* =========================
+   Lista em caixa com scroll interno (10 por vez)
+   Ativa automaticamente se #caixa-transacoes existir.
+   ========================= */
+function initTransacoesEmCaixa() {
+  const caixa = document.getElementById('caixa-transacoes');
+  const lista = document.getElementById('lista-transacoes');
+  const loading = document.getElementById('loading');
+  if (!caixa || !lista) return;
+
+  const POR_PAGINA = 10;
+  let pagina = 0;
+  let dataset = [];
+
+  function coletarETriar() {
+    const todas = Object.values(finance.getTransacoes()).map(t => ({
+      ...t,
+      __date: new Date(t.data)
+    }));
+
+    const tipo = dom.filtroTipoSelect?.value || 'todos';
+    const categoria = dom.filtroCategoriaSelect?.value || 'todas';
+    const ordenarPor = dom.ordenarPorSelect?.value || 'data';
+    const asc = JSON.parse(localStorage.getItem('ordemAscendente') ?? 'false');
+
+    dataset = todas.filter(t => {
+      if (tipo !== 'todos' && t.tipo !== tipo) return false;
+      if (categoria !== 'todas' && t.categoria !== categoria) return false;
+      return true;
+    });
+
+    dataset.sort((a, b) => {
+      if (ordenarPor === 'valor') return asc ? (a.valor - b.valor) : (b.valor - a.valor);
+      if (ordenarPor === 'descricao') {
+        const aa = (a.descricao || '').toLowerCase(), bb = (b.descricao || '').toLowerCase();
+        return asc ? aa.localeCompare(bb) : bb.localeCompare(aa);
+      }
+      return asc ? (a.__date - b.__date) : (b.__date - a.__date);
+    });
+  }
+
+  function limparEIniciar() {
+    lista.innerHTML = '';
+    pagina = 0;
+    if (!dataset.length) {
+      const li = document.createElement('li');
+      li.className = 'transacao-item';
+      li.style.justifyContent = 'center';
+      li.textContent = 'Nenhuma transação encontrada.';
+      lista.appendChild(li);
+    } else {
+      carregarMais();
+    }
+    if (loading) loading.style.display = dataset.length > POR_PAGINA ? 'block' : 'none';
+  }
+
+  function carregarMais() {
+    const inicio = pagina * POR_PAGINA;
+    const fim = inicio + POR_PAGINA;
+    const lote = dataset.slice(inicio, fim);
+
+    lote.forEach(t => {
+      const li = dom.criarItemTransacao ? dom.criarItemTransacao(t) : (() => {
+        const el = document.createElement('li');
+        el.className = 'transacao-item';
+        el.textContent = `${t.data} — ${t.descricao} — ${BRL.format(+t.valor || 0)}`;
+        return el;
+      })();
+      lista.appendChild(li);
+    });
+
+    pagina++;
+    if (loading) {
+      const fimDaLista = (pagina * POR_PAGINA) >= dataset.length;
+      loading.style.display = fimDaLista ? 'none' : 'block';
+    }
+  }
+
+  function onScroll() {
+    const pertoDoFim = (caixa.scrollTop + caixa.clientHeight) >= (caixa.scrollHeight - 12);
+    const aindaTem = (pagina * POR_PAGINA) < dataset.length;
+    if (pertoDoFim && aindaTem) carregarMais();
+  }
+
+  caixa.addEventListener('scroll', onScroll, { passive: true });
+
+  dom.filtroTipoSelect?.addEventListener('change', () => { coletarETriar(); limparEIniciar(); });
+  dom.filtroCategoriaSelect?.addEventListener('change', () => { coletarETriar(); limparEIniciar(); });
+  dom.ordenarPorSelect?.addEventListener('change', () => { coletarETriar(); limparEIniciar(); });
+  dom.toggleOrdenacaoBtn?.addEventListener('click', () => { coletarETriar(); limparEIniciar(); });
+
+  on(EVENT_NAMES.DATA_UPDATED, () => { coletarETriar(); limparEIniciar(); });
+
+  coletarETriar();
+  limparEIniciar();
+}
+
+/* =========================
    Start
    ========================= */
 window.addEventListener('load', init);
+

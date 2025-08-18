@@ -335,3 +335,42 @@ input:invalid,select:invalid{border-color:var(--cor-aviso)}
 :root:not(.light) #toggle-tema i{color:#fff}
 :root.light #toggle-tema i{color:#000}
 #toggle-tema:hover i{opacity:.7}
+.item-transacao {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.valor-despesa {
+  color: #e63946;
+  font-weight: bold;
+}
+
+.valor-receita {
+  color: #2a9d8f;
+  font-weight: bold;
+}
+.caixa-transacoes{
+  max-height: 480px;          /* altura da caixa (ajuste à vontade) */
+  overflow-y: auto;
+  background: var(--card-bg, #0b1221);
+  border: 1px solid rgba(148,163,184,.2);
+  border-radius: 14px;
+  padding: 8px 0;
+}
+.caixa-transacoes ul{ margin: 0; padding: 0; list-style: none; }
+.caixa-transacoes .transacao-item{ padding: 10px 14px; }
+
+.loading{
+  display: none;
+  text-align: center;
+  padding: .75rem;
+  font-size: .9rem;
+  opacity: .75;
+}
+.caixa-transacoes::-webkit-scrollbar{ width: 10px; }
+.caixa-transacoes::-webkit-scrollbar-thumb{
+  background: rgba(148,163,184,.35);
+  border-radius: 10px;
+}
