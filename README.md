@@ -1,78 +1,98 @@
-# 💰 MeuFinanceiro App
+# 💰 MeuFinanceiro
 
-Um **PWA (Progressive Web App)** simples e intuitivo para o gerenciamento de finanças pessoais.  
-Funciona **offline**, pode ser **instalado no celular/desktop** e ajuda você a organizar receitas, despesas, gráficos e relatórios.
 
+[![License: MIT](https://img.shields.io/github/license/Ismaelly1984/financeiro)](./LICENSE.md)
+[![Top Language](https://img.shields.io/github/languages/top/Ismaelly1984/financeiro)](https://github.com/Ismaelly1984/financeiro)
+[![Last Commit](https://img.shields.io/github/last-commit/Ismaelly1984/financeiro)](https://github.com/Ismaelly1984/financeiro/commits)
+[![Open Issues](https://img.shields.io/github/issues-raw/Ismaelly1984/financeiro)](https://github.com/Ismaelly1984/financeiro/issues)
+[![Stars](https://img.shields.io/github/stars/Ismaelly1984/financeiro?style=social)](https://github.com/Ismaelly1984/financeiro/stargazers)
+
+> MeuFinanceiro — PWA simples e intuitivo para gerenciar suas finanças pessoais. Funciona offline, é instalável e traz gráficos e relatórios para facilitar o controle.
 
 ---
 
-## 🚀 Funcionalidades
+## 📌 Demo
+Acesse a demo online (GitHub Pages): (adicione o link da demo aqui)
 
-- ✅ **Registro de Transações**: adicione, edite e exclua receitas e despesas  
-- ✅ **Visão Geral**: saldo, receitas e despesas totais em um único painel  
-- ✅ **Orçamentos**: defina limites mensais por categoria  
-- ✅ **Gráficos**: visualização interativa com **Chart.js**  
-- ✅ **Relatórios**: análise detalhada por período  
-- ✅ **Tema Claro/Escuro**: personalização do visual  
-- ✅ **Modo Offline**: funciona mesmo sem internet (via **Service Worker**)  
-- ✅ **PWA Instalável**: atalho direto no celular ou desktop  
+---
+
+## 🎯 Funcionalidades principais
+- Registro de transações: adicionar, editar e excluir receitas e despesas  
+- Painel resumo: saldo, total de receitas e despesas  
+- Orçamentos: limites mensais por categoria  
+- Gráficos interativos com Chart.js  
+- Relatórios por período  
+- Tema claro/escuro  
+- Modo offline (Service Worker)  
+- Instalável como PWA
+
+---
+
+## 🖼️ Screenshots & GIF
+Substitua os arquivos em ./assets/ por suas imagens reais. Exemplos (placeholders):
+
+![Tela principal - MeuFinanceiro](./assets/screenshot-1.png)
+![Formulário de transação](./assets/screenshot-2.png)
+
+
+Dicas:
+- Tamanho recomendado para screenshots: 1280×720 ou 900×600 (para visibilidade em GitHub).  
+- GIFs pequenos (≤3 MB) funcionam melhor.  
+- Para gerar GIFs: use ezgif.com, LICEcap ou Peek.
 
 ---
 
 ## 🛠️ Tecnologias
-
-- **HTML5, CSS3, JavaScript Vanilla**
-- **Chart.js** para gráficos  
-- **LocalStorage** para persistência  
-- **Service Worker + Manifest** para PWA offline  
+- HTML5, CSS3, JavaScript (Vanilla)  
+- Chart.js  
+- LocalStorage  
+- Service Worker + Web App Manifest (PWA)
 
 ---
 
-## 📦 Instalação Local
-
-Clone este repositório:
-
+## 📦 Instalação (local)
+1. Clone:
 ```bash
 git clone https://github.com/Ismaelly1984/financeiro.git
-Entre na pasta:
-
-bash
-Copiar
-Editar
+```
+2. Entre na pasta e sirva o projeto:
+```bash
 cd financeiro
-Inicie um servidor local (ex.: usando Live Server, http-server ou o próprio VSCode):
-
-bash
-Copiar
-Editar
 npx serve .
-Abra no navegador:
-
-arduino
-Copiar
-Editar
+```
+3. Abra:
 http://localhost:3000
-🌍 Demo Online
-👉 Acesse aqui no GitHub Pages
 
-📱 Como Instalar (PWA)
-Abra o app no navegador (Chrome, Edge ou Safari)
+---
 
-Clique em "Adicionar à tela inicial" ou "Instalar"
+## 📱 Como instalar como PWA
+1. Abra em Chrome/Edge/Safari.  
+2. Clique em "Adicionar à tela inicial" / "Instalar".  
+3. Use como app nativo.
 
-Use como se fosse um app nativo 🚀
+---
 
-📖 Documentação
-Política de Privacidade
+## 🤝 Como contribuir
+Siga o guia completo em CONTRIBUTING.md (link abaixo). Principais passos:
+- Fork → branch com nome `feature/<descritivo>` ou `fix/<descritivo>` → PR.  
+- Abra uma issue se for uma mudança grande.  
+- Adicione testes ou instruções para testar sua alteração.
 
-Como Contribuir
+Link direto: ./CONTRIBUTING.md
 
-Changelog
+Boa primeira issue: procure por issues com a label `good first issue`.
 
-Licença MIT
+---
 
-📜 Licença
-Este projeto está sob a licença MIT.
-Consulte o arquivo LICENSE.md para mais detalhes.
+## 📣 Changelog
+Alterações e releases em CHANGELOG.md
 
-✨ Desenvolvido por Ismael Nunes com paixão por código e organização financeira.
+---
+
+## ⚖️ Licença
+Este projeto está sob a licença MIT. Veja LICENSE.md.
+
+---
+
+## ✉️ Contato
+Desenvolvido por Ismael Nunes — https://github.com/Ismaelly1984  
