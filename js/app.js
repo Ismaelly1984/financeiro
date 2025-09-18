@@ -543,6 +543,7 @@ function gerarRelatorio() {
 
   const ts = finance.getTransacoes();
   const filtradas = filtrarPorDataETipo(ts, inicio, fim, incReceitas, incDespesas);
+  const temDados = filtradas.length > 0;
 
   // KPIs + categorias (para despesas)
   let receitas = 0, despesas = 0;
@@ -680,7 +681,9 @@ function gerarRelatorio() {
     }
   }, { current: relChartPie, set current(v) { relChartPie = v; }, get current() { return relChartPie; } });
 
-  dom.exibirMensagem?.('Relatório gerado.', 'success');
+  if (temDados) {
+    dom.exibirMensagem?.('Relatório gerado.', 'success');
+  }
 }
 
 function exportarRelatorioCSV() {
