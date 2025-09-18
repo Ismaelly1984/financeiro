@@ -117,7 +117,6 @@ function init() {
     document.getElementById('rel-inc-receitas')?.addEventListener('change', gerarRelatorio);
     document.getElementById('rel-inc-despesas')?.addEventListener('change', gerarRelatorio);
     document.getElementById('rel-agrup')?.addEventListener('change', gerarRelatorio);
-    document.getElementById('rel-demo')?.addEventListener('click', carregarDadosDeExemplo);
   }
 
   // Modal edição — fechar/cancelar
@@ -710,79 +709,6 @@ function exportarRelatorioCSV() {
 }
 
 /* =========================
-   Demo data (semente)
-   ========================= */
-function ymd(y, m, d) {
-  const mm = String(m).padStart(2, '0');
-  const dd = String(d).padStart(2, '0');
-  return `${y}-${mm}-${dd}`;
-}
-function carregarDadosDeExemplo() {
-  const now = new Date();
-  const anoAtual = now.getFullYear();
-  const mesAtual = now.getMonth() + 1; // 1-12
-
-  const rel = (offset) => {
-    let m = mesAtual + offset; let y = anoAtual;
-    while (m <= 0) { m += 12; y -= 1; }
-    while (m > 12) { m -= 12; y += 1; }
-    return { y, m };
-  };
-
-  const exemplos = [
-    // Receitas
-    { descricao: 'Salário', valor: 4200, tipo: 'receita', categoria: 'salario', data: ymd(rel(0).y, rel(0).m, 5) },
-    { descricao: 'Freelance', valor: 800, tipo: 'receita', categoria: 'outros', data: ymd(rel(0).y, rel(0).m, 18) },
-    { descricao: 'Salário', valor: 4200, tipo: 'receita', categoria: 'salario', data: ymd(rel(-1).y, rel(-1).m, 5) },
-    { descricao: 'Bônus', valor: 600, tipo: 'receita', categoria: 'outros', data: ymd(rel(-1).y, rel(-1).m, 20) },
-    { descricao: 'Salário', valor: 4200, tipo: 'receita', categoria: 'salario', data: ymd(rel(-2).y, rel(-2).m, 5) },
-
-    // Despesas recorrentes
-    { descricao: 'Aluguel', valor: 1600, tipo: 'despesa', categoria: 'outros', data: ymd(rel(0).y, rel(0).m, 8) },
-    { descricao: 'Transporte (passe)', valor: 220, tipo: 'despesa', categoria: 'transporte', data: ymd(rel(0).y, rel(0).m, 2) },
-    { descricao: 'Mercado', valor: 650, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(0).y, rel(0).m, 12) },
-    { descricao: 'Restaurante', valor: 120, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(0).y, rel(0).m, 22) },
-    { descricao: 'Academia', valor: 99, tipo: 'despesa', categoria: 'saude', data: ymd(rel(0).y, rel(0).m, 3) },
-    { descricao: 'Farmácia', valor: 85, tipo: 'despesa', categoria: 'saude', data: ymd(rel(0).y, rel(0).m, 14) },
-    { descricao: 'Internet', valor: 120, tipo: 'despesa', categoria: 'outros', data: ymd(rel(0).y, rel(0).m, 10) },
-
-    // Diversão/Educação
-    { descricao: 'Cinema', valor: 50, tipo: 'despesa', categoria: 'lazer', data: ymd(rel(0).y, rel(0).m, 16) },
-    { descricao: 'Jogo online', valor: 80, tipo: 'despesa', categoria: 'lazer', data: ymd(rel(-1).y, rel(-1).m, 9) },
-    { descricao: 'Curso online', valor: 300, tipo: 'despesa', categoria: 'educacao', data: ymd(rel(-1).y, rel(-1).m, 11) },
-
-    // Variações meses anteriores
-    { descricao: 'Mercado', valor: 590, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-1).y, rel(-1).m, 13) },
-    { descricao: 'Restaurante', valor: 95, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-1).y, rel(-1).m, 25) },
-    { descricao: 'Transporte (app)', valor: 75, tipo: 'despesa', categoria: 'transporte', data: ymd(rel(-1).y, rel(-1).m, 21) },
-    { descricao: 'Internet', valor: 120, tipo: 'despesa', categoria: 'outros', data: ymd(rel(-1).y, rel(-1).m, 10) },
-
-    { descricao: 'Mercado', valor: 610, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-2).y, rel(-2).m, 12) },
-    { descricao: 'Restaurante', valor: 130, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-2).y, rel(-2).m, 23) },
-    { descricao: 'Transporte (passe)', valor: 220, tipo: 'despesa', categoria: 'transporte', data: ymd(rel(-2).y, rel(-2).m, 2) },
-    { descricao: 'Internet', valor: 120, tipo: 'despesa', categoria: 'outros', data: ymd(rel(-2).y, rel(-2).m, 10) },
-
-    // Mais meses
-    { descricao: 'Salário', valor: 4200, tipo: 'receita', categoria: 'salario', data: ymd(rel(-3).y, rel(-3).m, 5) },
-    { descricao: 'Mercado', valor: 580, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-3).y, rel(-3).m, 12) },
-    { descricao: 'Transporte (passe)', valor: 220, tipo: 'despesa', categoria: 'transporte', data: ymd(rel(-3).y, rel(-3).m, 2) },
-
-    { descricao: 'Salário', valor: 4200, tipo: 'receita', categoria: 'salario', data: ymd(rel(-4).y, rel(-4).m, 5) },
-    { descricao: 'Mercado', valor: 600, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-4).y, rel(-4).m, 12) },
-
-    { descricao: 'Salário', valor: 4200, tipo: 'receita', categoria: 'salario', data: ymd(rel(-5).y, rel(-5).m, 5) },
-    { descricao: 'Mercado', valor: 570, tipo: 'despesa', categoria: 'alimentacao', data: ymd(rel(-5).y, rel(-5).m, 12) },
-  ];
-
-  exemplos.forEach((t) => {
-    emit(EVENT_NAMES.TRANSACTION_ADDED, { ...t, id: Date.now() + Math.floor(Math.random() * 1e6) });
-  });
-
-  dom.exibirMensagem?.('Dados de exemplo carregados!', 'success');
-  gerarRelatorio();
-}
-
-/* =========================
    Módulo opcional: scroll infinito + filtro por mês
    ========================= */
 function initInfiniteScrollModule() {
@@ -1013,4 +939,3 @@ function initTransacoesEmCaixa() {
    Start
    ========================= */
 window.addEventListener('load', init);
-

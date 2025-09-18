@@ -35,6 +35,7 @@
       border-radius: 12px;
       padding: 1.25rem;
       display: flex;
+      flex-wrap: wrap;
       gap: 1rem;
       align-items: flex-start;
       box-shadow: var(--sombra-escura);
@@ -44,7 +45,7 @@
 
     .toc {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: .75rem; margin: 1rem 0 2rem
     }
     .toc a {
@@ -126,6 +127,15 @@
       min-width: 1.2rem; height: 1.2rem; font-size: .8rem; margin-left: .35rem;
       background: color-mix(in srgb, var(--cor-primaria) 25%, transparent);
       border: 1px solid var(--cor-borda); border-radius: 999px; padding: 0 .3rem; color: var(--cor-texto);
+    }
+
+    @media (max-width: 540px) {
+      .help-hero { flex-direction: column; align-items: stretch; }
+      .help-hero i { margin-top: 0; }
+      .search-input { flex-wrap: wrap; align-items: stretch; }
+      .search-input button {
+        width: 100%; justify-content: center;
+      }
     }
   </style>
 </head>
