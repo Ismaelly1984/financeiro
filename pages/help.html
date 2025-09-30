@@ -3,13 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Aprenda como usar o MeuFinanceiro: atalhos, filtros, gráficos, exportações e suporte para tirar o máximo do app." />
   <title>Ajuda • MeuFinanceiro</title>
 
   <!-- Estilo/tema do app -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" type="image/png" href="../favicon.png" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" crossorigin onload="this.onload=null;this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin>
+  </noscript>
 
   <!-- FAQ estruturado para SEO -->
   <script type="application/ld+json">
@@ -62,7 +70,15 @@
       border-radius: 12px; box-shadow: var(--sombra-escura);
       padding: 1.25rem; margin-bottom: 1rem
     }
-    .help-section h3 { margin-bottom: .5rem; color: var(--cor-primaria) }
+    .help-section h2 { margin-bottom: .5rem; color: var(--cor-texto); font-size: clamp(1.1rem, 2vw, 1.35rem); }
+    .help-section h3 {
+      margin-bottom: .35rem;
+      color: var(--cor-texto);
+      font-size: 1.05rem;
+      font-weight: 600;
+      padding-left: .5rem;
+      border-left: 3px solid var(--cor-primaria);
+    }
 
     .kbd {
       display: inline-block; border: 1px solid var(--cor-borda);
@@ -171,7 +187,7 @@
 
     <!-- Pesquisa (filtro instantâneo + botão) -->
     <section class="help-section" aria-labelledby="busca-title">
-      <h3 id="busca-title">Pesquisar na Ajuda</h3>
+      <h2 id="busca-title">Pesquisar na Ajuda</h2>
       <form id="help-search-form" class="search-wrap" role="search" aria-label="Pesquisar nas seções de ajuda">
         <label for="help-search" class="sr-only">Pesquisar</label>
         <div class="search-input">
@@ -205,7 +221,7 @@
 
     <!-- Início rápido -->
     <section id="inicio" class="help-section" aria-labelledby="inicio-title">
-      <h3 id="inicio-title">Início rápido</h3>
+      <h2 id="inicio-title">Início rápido</h2>
       <ol class="list-check">
         <li><i class="fas fa-check"></i><span>Abra <strong>Transações</strong> e clique em
             <strong>Adicionar</strong>.</span></li>
@@ -223,15 +239,15 @@
 
     <!-- Transações -->
     <section id="transacoes" class="help-section" aria-labelledby="transacoes-title">
-      <h3 id="transacoes-title">Transações</h3>
+      <h2 id="transacoes-title">Transações</h2>
       <div class="grid-2">
         <div>
-          <h4>Adicionar</h4>
+          <h3>Adicionar</h3>
           <ul class="list-check">
             <li><i class="fas fa-check"></i><span>Preencha os campos e clique em <strong>Adicionar</strong>.</span></li>
             <li><i class="fas fa-check"></i><span>Use categorias consistentes para relatórios mais fiéis.</span></li>
           </ul>
-          <h4 style="margin-top:.75rem">Editar/Excluir</h4>
+          <h3 style="margin-top:.75rem">Editar/Excluir</h3>
           <ul class="list-check">
             <li><i class="fas fa-check"></i><span>Ícone <i class="fas fa-edit"></i> para editar; <i
                   class="fas fa-trash-alt"></i> para excluir.</span></li>
@@ -239,7 +255,7 @@
           </ul>
         </div>
         <div>
-          <h4>Boas práticas</h4>
+          <h3>Boas práticas</h3>
           <ul class="list-check">
             <li><i class="fas fa-check"></i><span>Registre despesas recorrentes (ex.: internet, aluguel) no mesmo dia do
                 mês.</span></li>
@@ -254,7 +270,7 @@
 
     <!-- Filtros & Ordenação -->
     <section id="filtros" class="help-section" aria-labelledby="filtros-title">
-      <h3 id="filtros-title">Filtros & Ordenação</h3>
+      <h2 id="filtros-title">Filtros & Ordenação</h2>
       <p>Na página de <strong>Transações</strong> você pode filtrar por tipo (Receita/Despesa) e categoria, além de
         ordenar por <em>Data</em>, <em>Valor</em> ou <em>Descrição</em> (asc/desc). Essas preferências ficam salvas.</p>
       <p class="tip"><i class="fas fa-lightbulb"></i> Dica: combine filtros e exporte o CSV já filtrado.</p>
@@ -262,7 +278,7 @@
 
     <!-- Orçamentos -->
     <section id="orcamentos" class="help-section" aria-labelledby="orcamentos-title">
-      <h3 id="orcamentos-title">Orçamentos por categoria</h3>
+      <h2 id="orcamentos-title">Orçamentos por categoria</h2>
       <div class="grid-2">
         <div>
           <p>Defina limites por categoria no <strong>Resumo</strong>. O app exibe barra de progresso e alerta em 80% e
@@ -282,7 +298,7 @@
 
     <!-- Gráficos -->
     <section id="graficos" class="help-section" aria-labelledby="graficos-title">
-      <h3 id="graficos-title">Gráficos</h3>
+      <h2 id="graficos-title">Gráficos</h2>
       <ul class="list-check">
         <li><i class="fas fa-check"></i><span><strong>Pizza</strong>: distribuição das despesas por categoria (cores
             padronizadas do app).</span></li>
@@ -294,10 +310,10 @@
 
     <!-- Exportar / Importar -->
     <section id="exportacao" class="help-section" aria-labelledby="exportacao-title">
-      <h3 id="exportacao-title">Exportar / Importar</h3>
+      <h2 id="exportacao-title">Exportar / Importar</h2>
       <div class="grid-2">
         <div>
-          <h4>Exportar CSV</h4>
+          <h3>Exportar CSV</h3>
           <ul class="list-check">
             <li><i class="fas fa-check"></i><span>Em <strong>Transações</strong>, clique em <em>Exportar CSV</em> para
                 baixar tudo.</span></li>
@@ -306,7 +322,7 @@
           </ul>
         </div>
         <div>
-          <h4>Importar (opcional)</h4>
+          <h3>Importar (opcional)</h3>
           <p>Se você quiser, pode implementar uma importação CSV depois. Recomendado usar cabeçalhos:
             <code>Descrição;Valor;Tipo;Categoria;Data</code>.
           </p>
@@ -316,7 +332,7 @@
 
     <!-- Instalação & Offline -->
     <section id="instalacao" class="help-section" aria-labelledby="instalacao-title">
-      <h3 id="instalacao-title">Instalação & Offline</h3>
+      <h2 id="instalacao-title">Instalação & Offline</h2>
       <ul class="list-check">
         <li><i class="fas fa-check"></i><span><strong>PWA</strong>: adicione à tela inicial (Android/Chrome) ou use
             “Instalar app”.</span></li>
@@ -329,7 +345,7 @@
 
     <!-- Atalhos de teclado -->
     <section id="atalhos" class="help-section" aria-labelledby="atalhos-title">
-      <h3 id="atalhos-title">Atalhos</h3>
+      <h2 id="atalhos-title">Atalhos</h2>
       <div class="table-wrap" role="region" aria-label="Tabela de atalhos">
         <table>
           <thead>
@@ -349,7 +365,7 @@
 
     <!-- FAQ -->
     <section id="faq" class="help-section" aria-labelledby="faq-title">
-      <h3 id="faq-title">FAQ</h3>
+      <h2 id="faq-title">FAQ</h2>
       <details class="faq">
         <summary>Meus dados ficam salvos onde?</summary>
         <p>Localmente, no seu navegador (Local Storage). Nada é enviado para servidores. Use exportação CSV como backup.</p>
@@ -370,7 +386,7 @@
 
     <!-- Privacidade -->
     <section id="privacidade" class="help-section" aria-labelledby="privacidade-title">
-      <h3 id="privacidade-title">Privacidade</h3>
+      <h2 id="privacidade-title">Privacidade</h2>
       <p>O <strong>MeuFinanceiro</strong> foi projetado com <em>privacidade por padrão</em>:</p>
       <ul class="list-check">
         <li><i class="fas fa-check"></i><span>Dados somente no dispositivo (Local Storage).</span></li>
@@ -383,7 +399,7 @@
 
     <!-- Suporte -->
     <section id="suporte" class="help-section" aria-labelledby="suporte-title">
-      <h3 id="suporte-title">Suporte</h3>
+      <h2 id="suporte-title">Suporte</h2>
       <div class="grid-2">
         <div>
           <p>Fale com a gente:</p>

@@ -854,6 +854,10 @@ function initTransacoesEmCaixa() {
   const POR_PAGINA = 10;
   let pagina = 0;
   let dataset = [];
+  let carregando = false;
+  let observer = null;
+
+  const aindaTemItens = () => (pagina * POR_PAGINA) < dataset.length;
 
   function coletarETriar() {
     const todas = Object.values(finance.getTransacoes()).map(t => ({
@@ -885,19 +889,35 @@ function initTransacoesEmCaixa() {
   function limparEIniciar() {
     lista.innerHTML = '';
     pagina = 0;
+    carregando = false;
+
     if (!dataset.length) {
       const li = document.createElement('li');
       li.className = 'transacao-item';
       li.style.justifyContent = 'center';
       li.textContent = 'Nenhuma transação encontrada.';
       lista.appendChild(li);
-    } else {
-      carregarMais();
+      if (observer && loading) observer.unobserve(loading);
+      if (loading) loading.style.display = 'none';
+      return;
     }
+
     if (loading) loading.style.display = dataset.length > POR_PAGINA ? 'block' : 'none';
+    carregarMais();
+    if (observer && loading) {
+      observer.unobserve(loading);
+      if (aindaTemItens()) observer.observe(loading);
+    }
   }
 
   function carregarMais() {
+    if (carregando) return;
+    if (!aindaTemItens()) {
+      if (loading) loading.style.display = 'none';
+      return;
+    }
+
+    carregando = true;
     const inicio = pagina * POR_PAGINA;
     const fim = inicio + POR_PAGINA;
     const lote = dataset.slice(inicio, fim);
@@ -914,15 +934,28 @@ function initTransacoesEmCaixa() {
 
     pagina++;
     if (loading) {
-      const fimDaLista = (pagina * POR_PAGINA) >= dataset.length;
-      loading.style.display = fimDaLista ? 'none' : 'block';
+      loading.style.display = aindaTemItens() ? 'block' : 'none';
     }
+    if (observer && loading && !aindaTemItens()) observer.unobserve(loading);
+    carregando = false;
   }
 
   function onScroll() {
     const pertoDoFim = (caixa.scrollTop + caixa.clientHeight) >= (caixa.scrollHeight - 12);
-    const aindaTem = (pagina * POR_PAGINA) < dataset.length;
-    if (pertoDoFim && aindaTem) carregarMais();
+    if (pertoDoFim) carregarMais();
+  }
+
+  if ('IntersectionObserver' in window && loading) {
+    observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) carregarMais();
+      });
+    }, { root: caixa, rootMargin: '0px 0px 120px 0px', threshold: 0.05 });
+  }
+
+  function teardown() {
+    caixa.removeEventListener('scroll', onScroll);
+    if (observer) observer.disconnect();
   }
 
   caixa.addEventListener('scroll', onScroll, { passive: true });
@@ -933,6 +966,7 @@ function initTransacoesEmCaixa() {
   dom.toggleOrdenacaoBtn?.addEventListener('click', () => { coletarETriar(); limparEIniciar(); });
 
   on(EVENT_NAMES.DATA_UPDATED, () => { coletarETriar(); limparEIniciar(); });
+  window.addEventListener('beforeunload', teardown, { once: true });
 
   coletarETriar();
   limparEIniciar();
