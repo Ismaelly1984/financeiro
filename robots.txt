@@ -1,0 +1,7 @@
+# robots.txt para MeuFinanceiro
+# Permite todos os rastreadores e aponta para o sitemap gerado
+
+User-agent: *
+Disallow:
+
+Sitemap: https://ismaelly1984.github.io/financeiro/sitemap.xml
