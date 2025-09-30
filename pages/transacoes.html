@@ -45,7 +45,7 @@
         <li><a href="./relatorios.html">Relatórios</a></li>
         <li><a href="./help.html">Ajuda</a></li>
         <li>
-          <button id="toggle-tema" aria-label="Alternar tema claro/escuro">
+          <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
             <i class="fas fa-moon"></i>
           </button>
         </li>
@@ -91,7 +91,7 @@
         <option value="outros">🧩 Outros</option>
       </select>
       <input type="date" id="data" name="data" required />
-      <button type="submit"><i class="fas fa-plus"></i> Adicionar</button>
+      <button type="submit" class="btn-acoes"><i class="fas fa-plus"></i> Adicionar</button>
     </form>
 
     <!-- Filtros / Ordenação / Export -->
@@ -120,7 +120,7 @@
             <option value="valor">Valor</option>
             <option value="descricao">Descrição</option>
           </select>
-          <button id="toggle-ordenacao" aria-label="Alternar ordem">
+          <button id="toggle-ordenacao" class="btn-acoes" aria-label="Alternar ordem">
             <i class="fas fa-sort-amount-down"></i>
           </button>
         </div>
@@ -174,7 +174,7 @@
           <option value="outros">🧩 Outros</option>
         </select>
         <input type="number" id="input-limite-categoria" placeholder="Definir Limite (R$)" step="0.01" />
-        <button id="btn-salvar-limite-categoria"><i class="fas fa-save"></i> Salvar Limite</button>
+        <button id="btn-salvar-limite-categoria" class="btn-acoes"><i class="fas fa-save"></i> Salvar Limite</button>
       </div>
       <div id="lista-orcamentos-categorias" class="lista-orcamentos-categorias"></div>
     </section>
@@ -194,10 +194,10 @@
   </main>
 
   <!-- Modal de edição -->
-  <div id="modal-editar" class="modal">
+  <div id="modal-editar" class="modal" aria-hidden="true" tabindex="-1" aria-labelledby="modal-editar-title">
     <div class="modal-content">
       <span id="modal-editar-close" class="close-btn" aria-label="Fechar modal">&times;</span>
-      <h2>Editar Transação</h2>
+      <h2 id="modal-editar-title">Editar Transação</h2>
       <form id="form-editar">
         <input type="hidden" id="edit-id" name="edit-id" />
         <input type="text" id="edit-descricao" name="edit-descricao" placeholder="Descrição" required />
@@ -217,23 +217,23 @@
         </select>
         <input type="date" id="edit-data" name="edit-data" required />
         <div class="modal-buttons">
-          <button type="submit" class="modal-salvar-btn"><i class="fas fa-save"></i> Salvar</button>
-          <button type="button" id="editar-cancelar-btn" class="modal-cancelar-btn">
-            <i class="fas fa-times"></i> Cancelar
-          </button>
-        </div>
+          <button type="submit" class="modal-salvar-btn btn-acoes"><i class="fas fa-save"></i> Salvar</button>
+          <button type="button" id="editar-cancelar-btn" class="modal-cancelar-btn btn-acoes">
+             <i class="fas fa-times"></i> Cancelar
+           </button>
+         </div>
       </form>
     </div>
   </div>
 
   <!-- Modal de confirmação -->
-  <div id="modal-confirmacao" class="modal">
+  <div id="modal-confirmacao" class="modal" aria-hidden="true" tabindex="-1" aria-labelledby="modal-confirmacao-title">
     <div class="modal-content">
-      <h2>Confirmar Exclusão</h2>
+      <h2 id="modal-confirmacao-title">Confirmar Exclusão</h2>
       <p>Tem certeza que deseja excluir esta transação?</p>
       <div class="modal-buttons">
-        <button id="confirmar-exclusao-btn" class="modal-salvar-btn">Sim</button>
-        <button id="cancelar-exclusao-btn" class="modal-cancelar-btn">Não</button>
+        <button id="confirmar-exclusao-btn" class="modal-salvar-btn btn-acoes">Sim</button>
+        <button id="cancelar-exclusao-btn" class="modal-cancelar-btn btn-acoes">Não</button>
       </div>
     </div>
   </div>
@@ -243,11 +243,11 @@
     <div class="footer-container">
       <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
       <div class="footer-links">
-        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
-        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
-        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
-        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i class="fas fa-bullseye"></i></a>
-        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i class="fas fa-money-check-alt"></i></a>
+        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
+        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
+        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
+        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
+        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
       </div>
     </div>
   </footer>
@@ -285,6 +285,140 @@
       window.addEventListener('resize', () => {
         if (window.innerWidth > 900) setExpanded(false);
       });
+    })();
+
+    // IIFE: focus trap para modais (editar / confirmação)
+    (function modalFocusTrap() {
+      const modalEditar = document.getElementById('modal-editar');
+      const modalConfirm = document.getElementById('modal-confirmacao');
+      const modals = [modalEditar, modalConfirm].filter(Boolean);
+      if (!modals.length) return;
+
+      function getFocusable(container) {
+        return Array.from(container.querySelectorAll(
+          'a[href], area[href], input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"])'
+        )).filter(el => el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+      }
+
+      const state = new Map(); // stores handlers and previous focus
+
+      function isVisible(el) {
+        if (!el) return false;
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden' && parseFloat(style.opacity) !== 0 && el.offsetParent !== null;
+      }
+
+      function activate(modal) {
+        if (state.get(modal)) return; // already active
+        // set dialog semantics
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.removeAttribute('aria-hidden');
+
+        const prev = document.activeElement;
+        state.set(modal, { prev });
+
+        const focusables = getFocusable(modal);
+        const first = focusables[0] || modal;
+        const last = focusables[focusables.length - 1] || modal;
+
+        function onKey(e) {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            closeModal(modal);
+            return;
+          }
+          if (e.key === 'Tab') {
+            if (focusables.length === 0) {
+              e.preventDefault();
+              return;
+            }
+            if (e.shiftKey) {
+              if (document.activeElement === first || modal === document.activeElement) {
+                e.preventDefault();
+                last.focus();
+              }
+            } else {
+              if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+              }
+            }
+          }
+        }
+
+        function onFocusIn(e) {
+          if (!modal.contains(e.target)) {
+            // Keep focus inside
+            (first || modal).focus();
+          }
+        }
+
+        document.addEventListener('keydown', onKey, true);
+        document.addEventListener('focusin', onFocusIn, true);
+
+        state.get(modal).onKey = onKey;
+        state.get(modal).onFocusIn = onFocusIn;
+
+        // Prevent background scrolling while modal open
+        document.body.style.overflow = 'hidden';
+
+        // Focus the first focusable element
+        (first || modal).focus();
+      }
+
+      function closeModal(modal) {
+        const entry = state.get(modal);
+        if (!entry) return;
+        const { onKey, onFocusIn, prev } = entry;
+        if (onKey) document.removeEventListener('keydown', onKey, true);
+        if (onFocusIn) document.removeEventListener('focusin', onFocusIn, true);
+
+        // Restore scrolling
+        document.body.style.overflow = '';
+
+        // Restore focus
+        try { prev?.focus(); } catch (err) { /* ignore */ }
+
+        // mark closed for a11y
+        modal.setAttribute('aria-hidden', 'true');
+
+        state.delete(modal);
+      }
+
+      // Wire up close buttons inside modals
+      const mappings = [
+        { modalId: 'modal-editar', closeIds: ['modal-editar-close', 'editar-cancelar-btn'] },
+        { modalId: 'modal-confirmacao', closeIds: ['confirmar-exclusao-btn', 'cancelar-exclusao-btn'] }
+      ];
+      mappings.forEach(m => {
+        const modalEl = document.getElementById(m.modalId);
+        if (!modalEl) return;
+        m.closeIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener('click', () => closeModal(modalEl));
+        });
+      });
+
+      // Observe attribute/style changes to detect when modals become visible
+      const observer = new MutationObserver(() => {
+        modals.forEach(modal => {
+          if (isVisible(modal)) {
+            if (!state.get(modal)) activate(modal);
+          } else {
+            if (state.get(modal)) closeModal(modal);
+          }
+        });
+      });
+      modals.forEach(m => observer.observe(m, { attributes: true, attributeFilter: ['style', 'class', 'aria-hidden'] }));
+
+      // Fallback: initial check
+      modals.forEach(m => {
+        if (isVisible(m)) activate(m);
+        else m.setAttribute && m.setAttribute('aria-hidden', 'true');
+      });
+
     })();
   </script>
 </body>

@@ -48,7 +48,7 @@
         <li><a href="./relatorios.html">Relatórios</a></li>
         <li><a href="./help.html">Ajuda</a></li>
         <li>
-          <button id="toggle-tema" aria-label="Alternar tema claro/escuro">
+          <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
             <i class="fas fa-moon"></i>
           </button>
         </li>
@@ -70,6 +70,9 @@
 
     <!-- Gráficos -->
     <section id="graficos" class="graficos">
+      <!-- KPIs dinâmicos calculados a partir das transações -->
+      <div id="kpi-graficos" class="kpi-panel" aria-live="polite"></div>
+
       <div class="grafico-container">
         <h2>Distribuição por categoria</h2>
         <p class="muted">Veja em quais categorias você concentra mais despesas.</p>
@@ -111,11 +114,11 @@
     <div class="footer-container">
       <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
       <div class="footer-links">
-        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
-        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
-        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
-        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i class="fas fa-bullseye"></i></a>
-        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i class="fas fa-money-check-alt"></i></a>
+        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
+        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
+        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
+        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
+        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
       </div>
     </div>
   </footer>

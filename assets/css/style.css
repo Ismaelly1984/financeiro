@@ -315,6 +315,61 @@ input:invalid,select:invalid{border-color:var(--cor-aviso)}
 .modal-buttons{display:flex;justify-content:center;gap:1rem;margin-top:1.25rem}
 .close-btn{color:var(--cor-texto);position:absolute;top:10px;right:20px;font-size:28px;font-weight:700;cursor:pointer}
 
+/* Títulos de modal podem ser focáveis para leitores de tela; estilo visual suave */
+.modal-content h2:focus {
+  outline: none;
+}
+.modal-content h2:focus-visible {
+  outline: 3px solid var(--focus-ring-color);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* ===== Melhorias visuais de foco ===== */
+/* Remova contornos padrão e aplique anel apenas para navegação por teclado (:focus-visible) */
+:focus { outline: none; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.transacao-item:focus-visible,
+.edit-btn:focus-visible,
+.delete-btn:focus-visible,
+.remover-orcamento-btn:focus-visible,
+.btn-acoes:focus-visible,
+.modal-salvar-btn:focus-visible,
+.modal-cancelar-btn:focus-visible,
+.fab-ajuda:focus-visible,
+.close-btn:focus-visible,
+.back-link:focus-visible,
+.nav-links a:focus-visible,
+.footer-links a:focus-visible,
+.toc a:focus-visible,
+.details summary:focus-visible,
+summary:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color) !important;
+  outline-offset: var(--focus-ring-offset) !important;
+  border-radius: 8px;
+}
+
+/* Pequeno halo adicional opcional (não substitui o contorno, apenas melhora percepção) */
+button:focus-visible,
+.btn-acoes:focus-visible,
+.back-link:focus-visible,
+.nav-links a:focus-visible,
+.footer-links a:focus-visible {
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--focus-ring-color) 15%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:focus-visible,
+  .btn-acoes:focus-visible,
+  .nav-links a:focus-visible,
+  .footer-links a:focus-visible { box-shadow: none; }
+}
+
 /* =========================
    Toast / Mensagens
    ========================= */
@@ -467,4 +522,152 @@ input:invalid,select:invalid{border-color:var(--cor-aviso)}
 .caixa-transacoes::-webkit-scrollbar-thumb{
   background: rgba(148,163,184,.35);
   border-radius: 10px;
+}
+
+/* =========================
+   Ajustes UI solicitados
+   - Espaçamento maior em listas de transações no desktop
+   - Tooltips visuais para ícones do footer (com suporte a :focus-visible)
+   - Animação suave do ícone de alternar tema (respeita prefers-reduced-motion)
+   ========================= */
+
+@media (min-width: 768px) {
+  /* mais espaçamento e padding em itens de transação para melhorar leitura em desktop */
+  .transacao-item {
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
+    font-size: 1rem;
+  }
+  .transacao-info { gap: 1.25rem }
+}
+
+/* Tooltips simples baseados em data-tooltip (aparecem no hover e foco) */
+.footer-links a[data-tooltip] {
+  position: relative;
+}
+.footer-links a[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  font-size: .85rem;
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;pointer-events: none;visibility: hidden;
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 1200;
+}
+.footer-links a:focus-visible::after,
+.footer-links a:hover::after {
+  opacity: 1;visibility: visible;transform: translateX(-50%) translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-links a[data-tooltip]::after { transition: none }
+}
+
+/* Animação do ícone de alternar tema */
+#toggle-tema i {
+  display: inline-block; /* para permitir transform */
+  transition: transform .42s cubic-bezier(.2,.9,.2,1), opacity .18s ease;
+}
+#toggle-tema i.theme-anim {
+  transform: rotate(360deg) scale(1.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  #toggle-tema i { transition: none }
+  #toggle-tema i.theme-anim { transform: none }
+}
+
+/* Regras específicas para links de navegação, rodapé e TOC */
+.nav-links a:focus-visible,
+.footer-links a:focus-visible,
+.toc a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--cor-primaria) 65%, transparent);
+  outline-offset: 3px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--cor-primaria) 6%, transparent);
+  color: var(--cor-primaria);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* Links apenas-ícone no rodapé: aumenta o contraste do fundo ao focar */
+.footer-links a:focus-visible {
+  background: color-mix(in srgb, var(--cor-primaria) 10%, transparent);
+}
+
+/* TOC: badge e link com foco mais evidente */
+.toc a:focus-visible { padding-left: .75rem; padding-right: .75rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links a:focus-visible, .footer-links a:focus-visible { box-shadow: none; }
+}
+
+/* ===== Ajustes WCAG para anel de foco ===== */
+:root {
+  /* Espessura e cor do anel de foco — forte o suficiente para contraste em dark */
+  --focus-ring-width: 4px;
+  --focus-ring-color: color-mix(in srgb, var(--cor-primaria) 90%, #000 10%);
+  --focus-ring-offset: 4px;
+}
+:root.light {
+  /* Em tema claro preservamos bom contraste usando cor primária sólida */
+  --focus-ring-color: color-mix(in srgb, var(--cor-primaria) 90%, #fff 10%);
+}
+
+/* Regras globais de override para foco visível — garantem contraste e espessura adequados */
+:focus { outline: none; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.transacao-item:focus-visible,
+.edit-btn:focus-visible,
+.delete-btn:focus-visible,
+.remover-orcamento-btn:focus-visible,
+.btn-acoes:focus-visible,
+.modal-salvar-btn:focus-visible,
+.modal-cancelar-btn:focus-visible,
+.fab-ajuda:focus-visible,
+.close-btn:focus-visible,
+.back-link:focus-visible,
+.nav-links a:focus-visible,
+.footer-links a:focus-visible,
+.toc a:focus-visible,
+.details summary:focus-visible,
+summary:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color) !important;
+  outline-offset: var(--focus-ring-offset) !important;
+  border-radius: 8px;
+}
+
+/* Pequeno halo adicional opcional (não substitui o contorno, apenas melhora percepção) */
+button:focus-visible,
+.btn-acoes:focus-visible,
+.back-link:focus-visible,
+.nav-links a:focus-visible,
+.footer-links a:focus-visible {
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--focus-ring-color) 15%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:focus-visible,
+  .btn-acoes:focus-visible,
+  .nav-links a:focus-visible,
+  .footer-links a:focus-visible { box-shadow: none; }
+}
+
+/* Fim ajustes WCAG */
+
+/* KPIs painel para gráficos/relatórios */
+.kpi-panel{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:1rem}
+.kpi-item{background:var(--cor-secundaria);border:1px solid var(--cor-borda);padding:.6rem .8rem;border-radius:10px;min-width:140px;text-align:center;font-weight:600;color:var(--cor-texto)}
+
+@media (min-width: 700px){
+  .kpi-panel{justify-content:flex-start}
 }

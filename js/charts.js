@@ -74,6 +74,7 @@ export function init() {
 function atualizarGraficos() {
   atualizarGraficoPizza();
   atualizarGraficoLinha();
+  atualizarKPIs();
 }
 
 /* =========================
@@ -241,4 +242,53 @@ function atualizarGraficoLinha() {
       }
     }
   });
+}
+
+/* =========================
+   KPIs (painel HTML simples)
+   ========================= */
+function atualizarKPIs() {
+  try {
+    const transacoesAtuais = getTransacoes();
+    const todas = Object.values(transacoesAtuais);
+    if (!todas) return;
+
+    const totalReceitas = sum(todas.filter(t => t.tipo === 'receita').map(t => +t.valor || 0));
+    const totalDespesas = sum(todas.filter(t => t.tipo === 'despesa').map(t => +t.valor || 0));
+    const numTransacoes = todas.length;
+
+    // média diária (simples): intervalo entre primeira e última data ou 1 dia
+    const datas = todas.map(t => t.data).filter(Boolean).sort();
+    let dias = 1;
+    if (datas.length >= 2) {
+      const primeiro = new Date(datas[0]);
+      const ultimo = new Date(datas[datas.length - 1]);
+      const diff = Math.max(1, Math.round((ultimo - primeiro) / (1000 * 60 * 60 * 24)));
+      dias = diff || 1;
+    }
+    const mediaDiaria = (totalReceitas + totalDespesas) / dias;
+
+    const kpiGraficos = document.getElementById('kpi-graficos');
+    if (kpiGraficos) {
+      kpiGraficos.innerHTML = `
+        <div class="kpi-item"><strong>Total Receitas:</strong> ${brl(totalReceitas)}</div>
+        <div class="kpi-item"><strong>Total Despesas:</strong> ${brl(totalDespesas)}</div>
+        <div class="kpi-item"><strong>Nº Transações:</strong> ${numTransacoes}</div>
+        <div class="kpi-item"><strong>Média diária:</strong> ${brl(mediaDiaria)}</div>
+      `;
+    }
+
+    const kpiRel = document.getElementById('kpi-relatorios');
+    if (kpiRel) {
+      kpiRel.innerHTML = `
+        <div class="kpi-item"><strong>Receitas:</strong> ${brl(totalReceitas)}</div>
+        <div class="kpi-item"><strong>Despesas:</strong> ${brl(totalDespesas)}</div>
+        <div class="kpi-item"><strong>Saldo:</strong> ${brl(totalReceitas - totalDespesas)}</div>
+        <div class="kpi-item"><strong>Transações:</strong> ${numTransacoes}</div>
+      `;
+    }
+  } catch (err) {
+    // não crítico
+    console.error('Erro atualizando KPIs', err);
+  }
 }

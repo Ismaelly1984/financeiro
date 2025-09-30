@@ -5,6 +5,7 @@ import * as finance from './finance.js';
 import * as charts from './charts.js';
 import { on, emit } from './eventEmitter.js';
 import { EVENT_NAMES, getLabelFor, getColorFor } from './config.js';
+import { initModalFocusTrap } from './modal.js';
 
 let ordemAscendente = JSON.parse(localStorage.getItem('ordemAscendente') ?? 'false');
 let idParaExcluir = null;
@@ -180,6 +181,9 @@ function init() {
         .catch(err => console.error('❌ Erro ao registrar SW:', err));
     });
   }
+
+  // Inicializa trap de foco para modais (se presente)
+  try { initModalFocusTrap(); } catch (_) { /* non-critical */ }
 }
 
 /* =========================
@@ -425,6 +429,14 @@ function toggleTema() {
   localStorage.setItem('tema', temaAtual);
   const icon = dom.toggleTemaBtn?.querySelector('i');
   if (icon) {
+    // animação visual: adiciona classe que aplica transform, removendo após animação
+    try {
+      if (!icon.classList.contains('theme-anim')) {
+        icon.classList.add('theme-anim');
+        window.setTimeout(() => icon.classList.remove('theme-anim'), 520);
+      }
+    } catch (_) {}
+
     if (temaAtual === 'light') { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
     else { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
   }
