@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>MeuFinanceiro | Resumo — Controle Financeiro Pessoal</title>
   <meta name="description" content="Controle ganhos, gastos e saldo em tempo real. MeuFinanceiro é um PWA para gerenciar receitas, despesas e orçamentos com privacidade local e suporte offline.">
-  <meta name="keywords" content="controle financeiro, gastos, receitas, orçamento, app PWA, finanças pessoais, saldo">
+  <meta name="keywords" content="controle financeiro, gastos, receitas, orçamento, app PWA, finanças pessoais, saldo, relatórios, app offline">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#3b82f6">
   <link rel="canonical" href="https://ismaelly1984.github.io/financeiro/index.html">
@@ -61,6 +61,21 @@
   <main class="container">
     <h1><i class="fas fa-wallet"></i> Resumo</h1>
 
+    <!-- Novo bloco: Sobre o app -->
+    <section class="sobre-app">
+      <h2>O que é o MeuFinanceiro?</h2>
+      <p>
+        O <strong>MeuFinanceiro</strong> é um aplicativo de <em>controle financeiro pessoal</em> que roda direto no navegador,
+        sem necessidade de cadastro ou conexão constante com a internet. Com ele, você organiza suas
+        <strong>receitas</strong>, <strong>despesas</strong> e <strong>orçamentos</strong> de forma simples e prática.
+      </p>
+      <p>
+        Desenvolvido como um <abbr title="Progressive Web App">PWA</abbr>, o sistema pode ser instalado em celulares e
+        computadores, funcionando inclusive <strong>offline</strong>. Todos os dados ficam armazenados apenas no
+        seu dispositivo, garantindo <strong>privacidade e segurança</strong>.
+      </p>
+    </section>
+
     <!-- Resumo de saldos -->
     <section id="resumo" class="resumo">
       <p><strong>Ganhos:</strong> R$ <span id="total-receitas">0.00</span></p>
@@ -80,6 +95,18 @@
         (<span id="porcentagem-gasto">0</span>%)</p>
     </section>
 
+    <!-- Novo bloco: Benefícios -->
+    <section class="beneficios">
+      <h2>Por que usar o MeuFinanceiro?</h2>
+      <ul>
+        <li>✅ Acompanhe seus <strong>ganhos, gastos e saldo</strong> em tempo real.</li>
+        <li>✅ Defina <strong>limites de gastos</strong> para não estourar o orçamento.</li>
+        <li>✅ Crie <strong>orçamentos por categoria</strong> como alimentação, transporte e lazer.</li>
+        <li>✅ Visualize <strong>gráficos interativos</strong> e relatórios exportáveis.</li>
+        <li>✅ Funciona <strong>100% offline</strong>, com seus dados guardados no navegador.</li>
+      </ul>
+    </section>
+
     <!-- Orçamento por Categoria -->
     <section id="orcamento-categorias" class="orcamento-categorias">
       <h2><i class="fas fa-chart-pie"></i> Orçamento por Categoria</h2>
@@ -97,6 +124,20 @@
         <button id="btn-salvar-limite-categoria"><i class="fas fa-save"></i> Salvar Limite</button>
       </div>
       <div id="lista-orcamentos-categorias" class="lista-orcamentos-categorias"></div>
+    </section>
+
+    <!-- Novo bloco: FAQ -->
+    <section class="faq">
+      <h2>Perguntas Frequentes</h2>
+      <h3>Preciso criar conta para usar?</h3>
+      <p>Não. O MeuFinanceiro funciona totalmente local, sem cadastros ou envio de informações para servidores.</p>
+
+      <h3>Posso usar no celular?</h3>
+      <p>Sim! Você pode instalar o app na tela inicial do seu smartphone Android ou iOS como um aplicativo nativo.</p>
+
+      <h3>Meus dados são seguros?</h3>
+      <p>Sim. Todos os dados ficam gravados no seu dispositivo através do <code>LocalStorage</code>.
+         Ninguém além de você tem acesso às informações.</p>
     </section>
   </main>
 
@@ -121,6 +162,5 @@
 
   <!-- App -->
   <script type="module" src="./js/app.js"></script>
- 
 </body>
 </html>

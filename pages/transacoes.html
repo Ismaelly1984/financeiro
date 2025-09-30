@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>MeuFinanceiro | Transações — Controle Financeiro Pessoal</title>
   <meta name="description" content="Registre, edite e acompanhe seu histórico de transações. MeuFinanceiro PWA facilita controle de receitas, despesas, exportação CSV e organização de gastos.">
-  <meta name="keywords" content="transações, controle financeiro, gastos, receitas, histórico, exportar CSV, app PWA">
+  <meta name="keywords" content="transações, controle financeiro, gastos, receitas, histórico, exportar CSV, app PWA, orçamentos, despesas pessoais">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#3b82f6">
   <link rel="canonical" href="https://ismaelly1984.github.io/financeiro/transacoes.html">
@@ -59,6 +59,20 @@
   <main class="container">
     <h1><i class="fas fa-list"></i> Transações</h1>
 
+    <!-- Novo bloco: Sobre -->
+    <section class="sobre-transacoes">
+      <h2>Gerencie suas transações</h2>
+      <p>
+        Nesta seção você pode registrar todas as suas <strong>despesas</strong> e <strong>receitas</strong>, 
+        categorizando cada lançamento em alimentação, transporte, lazer, saúde, educação e muito mais. 
+        O <em>MeuFinanceiro</em> organiza automaticamente seus dados, mantendo um histórico completo e atualizado.
+      </p>
+      <p>
+        Também é possível editar, excluir e exportar suas movimentações em formato <strong>CSV</strong>, 
+        facilitando a análise e integração com planilhas externas.
+      </p>
+    </section>
+
     <!-- Formulário -->
     <form id="form">
       <input type="text" id="descricao" name="descricao" placeholder="Descrição" required />
@@ -84,7 +98,6 @@
     <section class="transacoes">
       <div class="filter-sort-controls">
         <div class="filter-controls">
-          <!-- Removido o input de mês para evitar conflito com a caixa rolável -->
           <select id="filtro-tipo" aria-label="Filtrar por tipo">
             <option value="todos">Todos os Tipos</option>
             <option value="receita">Receitas</option>
@@ -116,13 +129,23 @@
         </button>
       </div>
 
-      <!-- Lista em CAIXA rolável (10 por vez) -->
       <div id="caixa-transacoes" class="caixa-transacoes" role="region" aria-label="Lista de transações rolável">
         <ul id="lista-transacoes" role="list" aria-live="polite"></ul>
         <div id="loading" class="loading" aria-hidden="true">
           <i class="fas fa-spinner fa-spin"></i> Carregando…
         </div>
       </div>
+    </section>
+
+    <!-- Novo bloco: Dicas -->
+    <section class="dicas-transacoes">
+      <h2>Dicas para organizar suas finanças</h2>
+      <ul>
+        <li>✅ Registre cada gasto logo após a compra para manter o histórico completo.</li>
+        <li>✅ Categorize suas despesas para entender <strong>onde está gastando mais</strong>.</li>
+        <li>✅ Use o filtro de transações para identificar padrões de consumo.</li>
+        <li>✅ Aproveite a exportação CSV para criar relatórios personalizados.</li>
+      </ul>
     </section>
 
     <!-- Limite geral -->
@@ -154,6 +177,19 @@
         <button id="btn-salvar-limite-categoria"><i class="fas fa-save"></i> Salvar Limite</button>
       </div>
       <div id="lista-orcamentos-categorias" class="lista-orcamentos-categorias"></div>
+    </section>
+
+    <!-- Novo bloco: FAQ -->
+    <section class="faq-transacoes">
+      <h2>Perguntas Frequentes</h2>
+      <h3>Posso editar uma transação depois de salvar?</h3>
+      <p>Sim. Basta clicar no ícone de edição e atualizar os dados desejados.</p>
+
+      <h3>É possível exportar todas as movimentações?</h3>
+      <p>Sim. Clique no botão <em>Exportar CSV</em> para baixar seu histórico completo de receitas e despesas.</p>
+
+      <h3>Quantas transações posso salvar?</h3>
+      <p>Não há limite prático. Todas ficam armazenadas localmente no seu navegador.</p>
     </section>
   </main>
 

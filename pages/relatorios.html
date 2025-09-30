@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>MeuFinanceiro | Relatórios — Controle Financeiro Pessoal</title>
-  <meta name="description" content="Gere relatórios exportáveis para analisar finanças por período. MeuFinanceiro PWA permite filtrar, agrupar e exportar CSV de receitas e despesas e impressão.">
-  <meta name="keywords" content="relatórios, exportar CSV, finanças, análises, orçamento, app PWA, imprimir">
+  <meta name="description" content="Gere relatórios exportáveis para analisar suas finanças por período. O MeuFinanceiro PWA permite filtrar, agrupar e exportar CSV de receitas e despesas, além de impressão.">
+  <meta name="keywords" content="relatórios, exportar CSV, finanças pessoais, análises financeiras, orçamento, app PWA, imprimir, gráficos">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#3b82f6">
   <link rel="canonical" href="https://ismaelly1984.github.io/financeiro/relatorios.html">
@@ -25,13 +25,13 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://ismaelly1984.github.io/financeiro/relatorios.html">
   <meta property="og:title" content="MeuFinanceiro | Relatórios — Controle Financeiro Pessoal">
-  <meta property="og:description" content="Gere relatórios exportáveis para analisar finanças por período. MeuFinanceiro PWA permite filtrar, agrupar e exportar CSV de receitas e despesas e impressão.">
+  <meta property="og:description" content="Gere relatórios exportáveis para analisar suas finanças por período. O MeuFinanceiro PWA permite filtrar, agrupar e exportar CSV de receitas e despesas, além de impressão.">
   <meta property="og:image" content="https://ismaelly1984.github.io/financeiro/assets/screenshots/resumo.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MeuFinanceiro | Relatórios — Controle Financeiro Pessoal">
-  <meta name="twitter:description" content="Gere relatórios exportáveis para analisar finanças por período. MeuFinanceiro PWA permite filtrar, agrupar e exportar CSV de receitas e despesas e impressão.">
+  <meta name="twitter:description" content="Gere relatórios exportáveis para analisar suas finanças por período. O MeuFinanceiro PWA permite filtrar, agrupar e exportar CSV de receitas e despesas, além de impressão.">
   <meta name="twitter:image" content="https://ismaelly1984.github.io/financeiro/assets/screenshots/resumo.png">
 </head>
 
@@ -59,6 +59,21 @@
   <main class="container">
     <h1><i class="fas fa-chart-line"></i> Relatórios</h1>
 
+    <!-- Novo bloco: Sobre -->
+    <section class="sobre-relatorios">
+      <h2>Relatórios financeiros completos</h2>
+      <p>
+        No <strong>MeuFinanceiro</strong> você pode gerar relatórios detalhados das suas 
+        <strong>receitas</strong> e <strong>despesas</strong> por período, ajudando a entender melhor
+        como está sua vida financeira.
+      </p>
+      <p>
+        É possível <strong>filtrar</strong> por datas, <strong>agrupar</strong> por mês ou dia,
+        visualizar <strong>gráficos interativos</strong> e exportar seus dados em formato
+        <abbr title="Comma-Separated Values">CSV</abbr> ou até mesmo <strong>imprimir</strong>.
+      </p>
+    </section>
+
     <div class="filter-sort-controls" style="margin-bottom:1rem; gap:.5rem">
       <input type="date" id="rel-inicio" aria-label="Data inicial">
       <input type="date" id="rel-fim" aria-label="Data final">
@@ -81,14 +96,36 @@
 
     <div id="rel-resumo" style="margin-bottom:1rem"></div>
 
-    <div class="grafico-container"><canvas id="rel-grafico-linha" aria-label="Gráfico de linha por período"></canvas>
-    </div>
-    <div class="grafico-container"><canvas id="rel-grafico-pizza" aria-label="Gráfico de pizza por categoria"></canvas>
-    </div>
+    <div class="grafico-container"><canvas id="rel-grafico-linha" aria-label="Gráfico de linha por período"></canvas></div>
+    <div class="grafico-container"><canvas id="rel-grafico-pizza" aria-label="Gráfico de pizza por categoria"></canvas></div>
 
     <section style="margin-top:1rem">
       <h3>Top Categorias</h3>
       <ul id="rel-top-categorias"></ul>
+    </section>
+
+    <!-- Novo bloco: Benefícios -->
+    <section class="beneficios-relatorios" style="margin-top:2rem">
+      <h2>Vantagens dos relatórios do MeuFinanceiro</h2>
+      <ul>
+        <li>✅ Acompanhe a evolução das suas finanças mês a mês.</li>
+        <li>✅ Descubra quais categorias consomem mais do seu orçamento.</li>
+        <li>✅ Exporte relatórios em CSV para uso em planilhas.</li>
+        <li>✅ Imprima relatórios para reuniões ou organização pessoal.</li>
+      </ul>
+    </section>
+
+    <!-- Novo bloco: FAQ -->
+    <section class="faq-relatorios" style="margin-top:2rem">
+      <h2>Perguntas Frequentes</h2>
+      <h3>Posso exportar relatórios em outros formatos além de CSV?</h3>
+      <p>No momento o formato CSV é o principal, mas você pode imprimir relatórios em PDF diretamente pelo navegador.</p>
+
+      <h3>É possível gerar relatórios apenas de uma categoria?</h3>
+      <p>Sim. Basta usar os filtros de categorias e período antes de gerar o relatório.</p>
+
+      <h3>Meus relatórios ficam salvos na nuvem?</h3>
+      <p>Não. Assim como todo o sistema, os relatórios são gerados localmente e não são enviados para servidores externos, garantindo sua privacidade.</p>
     </section>
   </main>
 
@@ -100,10 +137,8 @@
         <a href="../index.html" title="Resumo" aria-label="Ir para Resumo"><i class="fas fa-chart-pie"></i></a>
         <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações"><i class="fas fa-list"></i></a>
         <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos"><i class="fas fa-chart-line"></i></a>
-        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i
-            class="fas fa-bullseye"></i></a>
-        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i
-            class="fas fa-money-check-alt"></i></a>
+        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite"><i class="fas fa-bullseye"></i></a>
+        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento"><i class="fas fa-money-check-alt"></i></a>
       </div>
     </div>
   </footer>
@@ -116,5 +151,4 @@
   <!-- App -->
   <script type="module" src="../js/app.js"></script>
 </body>
-
 </html>
