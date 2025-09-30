@@ -127,5 +127,31 @@
 
   <!-- App -->
   <script type="module" src="../js/app.js"></script>
+  <script>
+    (function hamburgerToggle() {
+      const btn = document.getElementById('hamburger');
+      if (!btn) return;
+
+      function setExpanded(value) {
+        btn.setAttribute('aria-expanded', value ? 'true' : 'false');
+        document.documentElement.classList.toggle('menu-open', value);
+      }
+
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        setExpanded(!expanded);
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+          setExpanded(false);
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 900) setExpanded(false);
+      });
+    })();
+  </script>
 </body>
 </html>

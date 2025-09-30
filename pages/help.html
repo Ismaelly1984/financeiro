@@ -859,6 +859,34 @@
         }
       });
     })();
+
+    // Alterna aria-expanded do botão hamburger e adiciona/remover classe 'menu-open' para controle visual
+    (function hamburgerToggle() {
+      const btn = document.getElementById('hamburger');
+      if (!btn) return;
+
+      function setExpanded(value) {
+        btn.setAttribute('aria-expanded', value ? 'true' : 'false');
+        document.documentElement.classList.toggle('menu-open', value);
+      }
+
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        setExpanded(!expanded);
+      });
+
+      // Fecha o menu ao pressionar Esc
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+          setExpanded(false);
+        }
+      });
+
+      // Em telas largas garante que o estado não fique aberto por engano
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 900) setExpanded(false);
+      });
+    })();
   </script>
 </body>
 

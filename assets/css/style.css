@@ -384,6 +384,29 @@ input:invalid,select:invalid{border-color:var(--cor-aviso)}
   .orcamento-categorias .orcamento-controles select,
   .orcamento-categorias .orcamento-controles input[type="number"],
   .orcamento-categorias .orcamento-controles button{width:100%}
+
+  /* Quando a classe 'menu-open' está ativa no root (controlada pelo JS):
+     - mostra o menu colapsado
+     - bloqueia rolagem de fundo
+     - adiciona um backdrop sem necessidade de markup extra */
+  :root.menu-open {
+    overflow: hidden;
+  }
+  :root.menu-open .nav-links {
+    display: flex;
+    z-index: 1001; /* acima do backdrop, abaixo da navbar que tem z-index:1000 */
+  }
+  :root.menu-open::before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 60px; /* deixa a navbar visível */
+    bottom: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1000;
+  }
+
 }
 
 /* Médio: mais respiro nos gráficos */
