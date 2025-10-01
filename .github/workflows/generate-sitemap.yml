@@ -29,20 +29,32 @@ jobs:
           echo "Incluindo componentes (navbar/footer) nas páginas HTML"
           npm run include-components
 
-      - name: Install deps (meufinanceiro-sitemap)
+      - name: Build sitemap (se existir)
         run: |
-          cd meufinanceiro-sitemap
-          npm ci
+          echo "Verificando existência do diretório meufinanceiro-sitemap..."
+          if [ -d "meufinanceiro-sitemap" ]; then
+            echo "Diretório encontrado. Instalando dependências e executando build."
+            cd meufinanceiro-sitemap
+            npm ci
+            npm run build
+            # caso o build gere sitemap em subpasta, mova para raiz (opcional)
+            if [ -f sitemap.xml ]; then
+              mv -f sitemap.xml "${GITHUB_WORKSPACE:-.}/sitemap.xml" || true
+            elif [ -f dist/sitemap.xml ]; then
+              mv -f dist/sitemap.xml "${GITHUB_WORKSPACE:-.}/sitemap.xml" || true
+            fi
+          else
+            echo "meufinanceiro-sitemap não encontrado — pulando build do sitemap."
+          fi
 
-      - name: Build sitemap
-        run: |
-          cd meufinanceiro-sitemap
-          npm run build
-
-      - name: Commit e push do sitemap
+      - name: Commit e push do sitemap (se existir)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add sitemap.xml
-          git commit -m "chore: atualizar sitemap gerado pelo workflow" || echo "no changes to commit"
-          git push
+          if [ -f sitemap.xml ]; then
+            git add sitemap.xml
+            git commit -m "chore: atualizar sitemap gerado pelo workflow" || echo "no changes to commit"
+            git push
+          else
+            echo "Nenhum sitemap encontrado para commitar. Pulando etapa de commit/push."
+          fi
