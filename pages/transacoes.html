@@ -34,24 +34,25 @@
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-container">
-      <h1 class="logo">MeuFinanceiro</h1>
-      <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">&#9776;</button>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="../index.html">Resumo</a></li>
-        <li><a href="./transacoes.html" aria-current="page">Transações</a></li>
-        <li><a href="./graficos.html">Gráficos</a></li>
-        <li><a href="./relatorios.html">Relatórios</a></li>
-        <li><a href="./help.html">Ajuda</a></li>
-        <li>
-          <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
-            <i class="fas fa-moon"></i>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <nav class="navbar" role="navigation" aria-label="Navegação principal">
+  <div class="navbar-container">
+    <a class="nav-back" href="../index.html" aria-label="Voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <h1 class="logo">MeuFinanceiro</h1>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/index.html">Resumo</a></li>
+      <li><a href="/pages/transacoes.html">Transações</a></li>
+      <li><a href="/pages/graficos.html">Gráficos</a></li>
+      <li><a href="/pages/relatorios.html">Relatórios</a></li>
+      <li><a href="/pages/help.html">Ajuda</a></li>
+      <li>
+        <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
+          <i class="fas fa-moon"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
+</nav>
 
   <!-- Toasts -->
   <div id="mensagem-app" class="mensagem-app" role="status" aria-live="polite"></div>
@@ -149,7 +150,7 @@
     </section>
 
     <!-- Limite geral -->
-    <section id="limite-app" class="limite-gastos" style="margin-top:2rem">
+    <section id="limite-app" class="limite-gastos mt-2">
       <h2><i class="fas fa-bullseye"></i> Controle de Limite</h2>
       <label for="limite">Definir limite de gastos (R$):</label>
       <input type="number" id="limite" name="limite" placeholder="Ex: 1000" />
@@ -161,7 +162,7 @@
     </section>
 
     <!-- Orçamento por Categoria -->
-    <section id="orcamento-categorias" class="orcamento-categorias" style="margin-top:2rem">
+    <section id="orcamento-categorias" class="orcamento-categorias mt-2">
       <h2><i class="fas fa-chart-pie"></i> Orçamento por Categoria</h2>
       <div class="orcamento-controles">
         <select id="select-categoria-orcamento" aria-label="Selecionar categoria para orçamento">
@@ -240,17 +241,17 @@
 
   <!-- Rodapé -->
   <footer class="footer">
-    <div class="footer-container">
-      <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
-      <div class="footer-links">
-        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
-        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
-        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
-        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
-        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
-      </div>
+  <div class="footer-container">
+    <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
+    <div class="footer-links">
+      <a href="/index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
+      <a href="/pages/transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
+      <a href="/pages/graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
+      <a href="/index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
+      <a href="/index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
     </div>
-  </footer>
+  </div>
+</footer>
 
   <!-- FAB Ajuda -->
   <a href="./help.html" id="btn-ajuda-flutuante" class="fab-ajuda" aria-label="Abrir ajuda">

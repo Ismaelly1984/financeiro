@@ -37,24 +37,25 @@
 
 <body>
   <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-container">
-      <h1 class="logo">MeuFinanceiro</h1>
-      <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">&#9776;</button>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="../index.html">Resumo</a></li>
-        <li><a href="./transacoes.html">Transações</a></li>
-        <li><a href="./graficos.html">Gráficos</a></li>
-        <li><a href="./relatorios.html" aria-current="page">Relatórios</a></li>
-        <li><a href="./help.html">Ajuda</a></li>
-        <li>
-          <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
-            <i class="fas fa-moon"></i>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <nav class="navbar" role="navigation" aria-label="Navegação principal">
+  <div class="navbar-container">
+    <a class="nav-back" href="../index.html" aria-label="Voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <h1 class="logo">MeuFinanceiro</h1>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/index.html">Resumo</a></li>
+      <li><a href="/pages/transacoes.html">Transações</a></li>
+      <li><a href="/pages/graficos.html">Gráficos</a></li>
+      <li><a href="/pages/relatorios.html">Relatórios</a></li>
+      <li><a href="/pages/help.html">Ajuda</a></li>
+      <li>
+        <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
+          <i class="fas fa-moon"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
+</nav>
 
   <main class="container">
     <h1><i class="fas fa-chart-line"></i> Relatórios</h1>
@@ -74,15 +75,15 @@
       </p>
     </section>
 
-    <div class="filter-sort-controls" style="margin-bottom:1rem; gap:.5rem">
+    <div class="filter-sort-controls mb-1 gap-0-5">
       <input type="date" id="rel-inicio" aria-label="Data inicial">
       <input type="date" id="rel-fim" aria-label="Data final">
       <button id="rel-preset-mes" class="btn-acoes"><i class="fas fa-calendar-alt"></i> Este mês</button>
       <button id="rel-preset-30" class="btn-acoes"><i class="fas fa-clock"></i> Últimos 30 dias</button>
-      <label style="display:flex;align-items:center;gap:.35rem">
+      <label class="label-inline">
         <input type="checkbox" id="rel-inc-receitas" checked> Receitas
       </label>
-      <label style="display:flex;align-items:center;gap:.35rem">
+      <label class="label-inline">
         <input type="checkbox" id="rel-inc-despesas" checked> Despesas
       </label>
       <select id="rel-agrup" aria-label="Agrupar por">
@@ -95,20 +96,20 @@
     </div>
 
     <!-- KPIs dinâmicos (totais, média) para o período -->
-    <div id="kpi-relatorios" class="kpi-panel" aria-live="polite" style="margin-bottom:1rem"></div>
+    <div id="kpi-relatorios" class="kpi-panel mb-1" aria-live="polite"></div>
 
-    <div id="rel-resumo" style="margin-bottom:1rem"></div>
+    <div id="rel-resumo" class="mb-1"></div>
 
     <div class="grafico-container"><canvas id="rel-grafico-linha" aria-label="Gráfico de linha por período"></canvas></div>
     <div class="grafico-container"><canvas id="rel-grafico-pizza" aria-label="Gráfico de pizza por categoria"></canvas></div>
 
-    <section style="margin-top:1rem">
+    <section class="mt-1">
       <h3>Top Categorias</h3>
       <ul id="rel-top-categorias"></ul>
     </section>
 
     <!-- Novo bloco: Benefícios -->
-    <section class="beneficios-relatorios" style="margin-top:2rem">
+    <section class="beneficios-relatorios mt-2">
       <h2>Vantagens dos relatórios do MeuFinanceiro</h2>
       <ul>
         <li>✅ Acompanhe a evolução das suas finanças mês a mês.</li>
@@ -119,7 +120,7 @@
     </section>
 
     <!-- Novo bloco: FAQ -->
-    <section class="faq-relatorios" style="margin-top:2rem">
+    <section class="faq-relatorios mt-2">
       <h2>Perguntas Frequentes</h2>
       <h3>Posso exportar relatórios em outros formatos além de CSV?</h3>
       <p>No momento o formato CSV é o principal, mas você pode imprimir relatórios em PDF diretamente pelo navegador.</p>
@@ -134,17 +135,17 @@
 
   <!-- Rodapé -->
   <footer class="footer">
-    <div class="footer-container">
-      <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
-      <div class="footer-links">
-        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
-        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
-        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
-        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
-        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
-      </div>
+  <div class="footer-container">
+    <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
+    <div class="footer-links">
+      <a href="/index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
+      <a href="/pages/transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
+      <a href="/pages/graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
+      <a href="/index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
+      <a href="/index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
     </div>
-  </footer>
+  </div>
+</footer>
 
   <!-- FAB Ajuda -->
   <a href="./help.html" id="btn-ajuda-flutuante" class="fab-ajuda" aria-label="Abrir ajuda">

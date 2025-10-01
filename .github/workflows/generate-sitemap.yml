@@ -20,6 +20,15 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Install project scripts
+        run: |
+          npm ci --ignore-scripts || true
+
+      - name: Include components
+        run: |
+          echo "Incluindo componentes (navbar/footer) nas páginas HTML"
+          npm run include-components
+
       - name: Install deps (meufinanceiro-sitemap)
         run: |
           cd meufinanceiro-sitemap

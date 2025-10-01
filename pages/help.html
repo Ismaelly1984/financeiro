@@ -387,17 +387,24 @@
 <body>
   <!-- Navbar enxuta (sem Limite/Orçamento na nav; eles vivem no Resumo) -->
   <nav class="navbar" role="navigation" aria-label="Navegação principal">
-    <div class="navbar-container">
-      <a href="../index.html" class="back-link" aria-label="Voltar para o app">
-        <i class="fas fa-arrow-left"></i> Voltar
-      </a>
-      <h1 class="logo" aria-label="MeuFinanceiro - Ajuda">Ajuda</h1>
-      <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
-        <i class="fas fa-moon"></i>
-      </button>
-      <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">&#9776;</button>
-    </div>
-  </nav>
+  <div class="navbar-container">
+    <a class="nav-back" href="../index.html" aria-label="Voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <h1 class="logo">MeuFinanceiro</h1>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/index.html">Resumo</a></li>
+      <li><a href="/pages/transacoes.html">Transações</a></li>
+      <li><a href="/pages/graficos.html">Gráficos</a></li>
+      <li><a href="/pages/relatorios.html">Relatórios</a></li>
+      <li><a href="/pages/help.html">Ajuda</a></li>
+      <li>
+        <button id="toggle-tema" class="btn-acoes" aria-label="Alternar tema claro/escuro">
+          <i class="fas fa-moon"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
+</nav>
 
   <main class="container" id="topo">
     <header class="help-intro">
@@ -476,7 +483,7 @@
             <li><i class="fas fa-check"></i><span>Preencha os campos e clique em <strong>Adicionar</strong>.</span></li>
             <li><i class="fas fa-check"></i><span>Use categorias consistentes para relatórios mais fiéis.</span></li>
           </ul>
-          <h3 style="margin-top:.75rem">Editar/Excluir</h3>
+          <h3 class="mt-0-75">Editar/Excluir</h3>
           <ul class="list-check">
             <li><i class="fas fa-check"></i><span>Ícone <i class="fas fa-edit"></i> para editar; <i
                   class="fas fa-trash-alt"></i> para excluir.</span></li>
@@ -693,24 +700,24 @@
           </ul>
         </div>
       </div>
-      <p style="margin-top:1rem"><a href="#topo" class="back-link"><i class="fas fa-arrow-up"></i> Voltar ao topo</a>
+      <p class="mt-1"><a href="#topo" class="back-link"><i class="fas fa-arrow-up"></i> Voltar ao topo</a>
       </p>
     </section>
   </main>
 
   <!-- Rodapé consistente com o app -->
-  <footer class="footer" role="contentinfo">
-    <div class="footer-container">
-      <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
-      <div class="footer-links">
-        <a href="../index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
-        <a href="./transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
-        <a href="./graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
-        <a href="../index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
-        <a href="../index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
-      </div>
+  <footer class="footer">
+  <div class="footer-container">
+    <p>&copy; 2025 MeuFinanceiro. Todos os direitos reservados.</p>
+    <div class="footer-links">
+      <a href="/index.html" title="Resumo" aria-label="Ir para Resumo" data-tooltip="Resumo"><i class="fas fa-chart-pie"></i></a>
+      <a href="/pages/transacoes.html" title="Transações" aria-label="Ir para Transações" data-tooltip="Transações"><i class="fas fa-list"></i></a>
+      <a href="/pages/graficos.html" title="Gráficos" aria-label="Ir para Gráficos" data-tooltip="Gráficos"><i class="fas fa-chart-line"></i></a>
+      <a href="/index.html#limite-app" title="Limite" aria-label="Ir para Limite" data-tooltip="Limite"><i class="fas fa-bullseye"></i></a>
+      <a href="/index.html#orcamento-categorias" title="Orçamento" aria-label="Ir para Orçamento" data-tooltip="Orçamento"><i class="fas fa-money-check-alt"></i></a>
     </div>
-  </footer>
+  </div>
+</footer>
 
   <!-- Script de tema (igual ao app, isolado) -->
   <script>
