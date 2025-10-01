@@ -24,8 +24,8 @@ async function walk(dir, fileList = []) {
     if (entry.isDirectory()) {
       // skip component folder to avoid recursion
       if (path.resolve(full) === path.resolve(COMPONENTS_DIR)) continue;
-      // skip node_modules and .git
-      if (entry.name === 'node_modules' || entry.name === '.git') continue;
+      // skip node_modules, .git e subprojeto do sitemap
+      if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'meufinanceiro-sitemap') continue;
       await walk(full, fileList);
     } else if (entry.isFile() && entry.name.endsWith('.html')) {
       fileList.push(full);
@@ -41,11 +41,32 @@ async function replaceBlocks(filePath, navbarHtml, footerHtml) {
   const navRegex = /<nav\b[^>]*class=(?:"|')([^"']*\bnavbar\b[^"']*)(?:"|')[\s\S]*?<\/nav>/i;
   const footerRegex = /<footer\b[^>]*class=(?:"|')([^"']*\bfooter\b[^"']*)(?:"|')[\s\S]*?<\/footer>/i;
 
+  // Ajusta links absolutos para relativos com base no arquivo de destino
+  const adjustLinksForFile = (html) => {
+    const fromDir = path.dirname(filePath);
+    let prefix = path.relative(fromDir, ROOT).replace(/\\/g, '/');
+    prefix = prefix === '' ? '.' : prefix;
+
+    let h = html;
+    h = h.replace(/href="\/index\.html"/g, `href="${prefix}/index.html"`);
+    h = h.replace(/href='\/index\.html'/g, `href='${prefix}/index.html'`);
+    h = h.replace(/href="\/index\.html#/g, `href="${prefix}/index.html#`);
+    h = h.replace(/href='\/index\.html#/g, `href='${prefix}/index.html#`);
+    h = h.replace(/href="\/pages\//g, `href="${prefix}/pages/`);
+    h = h.replace(/href='\/pages\//g, `href='${prefix}/pages/`);
+    // Link de voltar no navbar
+    h = h.replace(/href="\.\.\/index\.html"/g, `href="${prefix}/index.html"`);
+    h = h.replace(/href='\.\.\/index\.html'/g, `href='${prefix}/index.html'`);
+    return h;
+  };
+
   if (navRegex.test(content)) {
-    content = content.replace(navRegex, navbarHtml.trim());
+    const navAdj = adjustLinksForFile(navbarHtml.trim());
+    content = content.replace(navRegex, navAdj);
   }
   if (footerRegex.test(content)) {
-    content = content.replace(footerRegex, footerHtml.trim());
+    const footAdj = adjustLinksForFile(footerHtml.trim());
+    content = content.replace(footerRegex, footAdj);
   }
 
   if (content !== original) {
@@ -70,6 +91,7 @@ async function replaceBlocks(filePath, navbarHtml, footerHtml) {
       const rel = path.relative(ROOT, f);
       if (rel.startsWith('assets' + path.sep)) return false;
       if (rel.startsWith('scripts' + path.sep)) return false;
+      if (rel.startsWith('meufinanceiro-sitemap' + path.sep)) return false;
       if (rel.startsWith('.github' + path.sep)) return false;
       return true;
     });
@@ -90,3 +112,4 @@ async function replaceBlocks(filePath, navbarHtml, footerHtml) {
     process.exit(1);
   }
 })();
+
