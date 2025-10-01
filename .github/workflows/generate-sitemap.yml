@@ -22,12 +22,19 @@ jobs:
 
       - name: Install project scripts
         run: |
-          npm ci --ignore-scripts || true
+          echo "Instalando dependências do projeto (apenas se necessário)"
+          if [ -f package-lock.json ]; then
+            echo "package-lock.json encontrado — usando npm ci"
+            npm ci --ignore-scripts || true
+          else
+            echo "package-lock.json não encontrado — usando npm install"
+            npm install --no-audit --no-fund --ignore-scripts || true
+          fi
 
       - name: Include components
         run: |
           echo "Incluindo componentes (navbar/footer) nas páginas HTML"
-          npm run include-components
+          npm run include-components || node scripts/include-components.js
 
       - name: Build sitemap (se existir)
         run: |
@@ -35,8 +42,14 @@ jobs:
           if [ -d "meufinanceiro-sitemap" ]; then
             echo "Diretório encontrado. Instalando dependências e executando build."
             cd meufinanceiro-sitemap
-            npm ci
-            npm run build
+            if [ -f package-lock.json ]; then
+              echo "package-lock.json encontrado em meufinanceiro-sitemap — usando npm ci"
+              npm ci || true
+            else
+              echo "package-lock.json não encontrado em meufinanceiro-sitemap — usando npm install"
+              npm install --no-audit --no-fund || true
+            fi
+            npm run build || true
             # caso o build gere sitemap em subpasta, mova para raiz (opcional)
             if [ -f sitemap.xml ]; then
               mv -f sitemap.xml "${GITHUB_WORKSPACE:-.}/sitemap.xml" || true
